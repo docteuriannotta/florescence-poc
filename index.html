@@ -659,6 +659,118 @@
     main { max-width: 720px; margin: 0 auto; }
     .nav-bar { max-width: 720px; left: 50%; transform: translateX(-50%); border-radius: 14px 14px 0 0; }
   }
+
+  /* ============ SESSION 5 — WIKIPEDIA ENRICHMENT ============ */
+
+  /* Hero photo (fiche détail) : remplace l'icône emoji quand on a une photo Wikipedia */
+  .detail-hero .hero-photo-wrap {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    margin: 4px auto 14px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid var(--accent-dim);
+    background: linear-gradient(135deg, var(--bg-deep), var(--bg-card-2));
+    position: relative;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.45), inset 0 -3px 8px rgba(0,0,0,0.3);
+  }
+  .detail-hero.is-legendaire .hero-photo-wrap { border-color: var(--gold); }
+  .detail-hero .hero-photo {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .detail-hero .hero-photo.loaded { opacity: 1; }
+  .detail-hero .hero-photo-skeleton {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(110deg, var(--bg-card-2) 25%, var(--bg-card) 50%, var(--bg-card-2) 75%);
+    background-size: 200% 100%;
+    animation: skel-shimmer 1.4s linear infinite;
+    font-size: 44px; opacity: 0.55;
+  }
+  @keyframes skel-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .detail-hero .hero-photo-skeleton.hidden { display: none; }
+  .detail-hero .hero-photo-credit {
+    position: absolute; right: 6px; bottom: 6px;
+    font-size: 10px; padding: 2px 8px;
+    background: rgba(5,11,7,0.75);
+    color: var(--fg-dim);
+    border-radius: 6px;
+    pointer-events: none;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(2px);
+  }
+  .wiki-source {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--fg-dim);
+  }
+  .wiki-source a { color: var(--accent); text-decoration: none; }
+  .wiki-source a:active { opacity: 0.7; }
+
+  /* Photo de fond sur cards Pokédex (genres découverts qui ont une photo en cache) */
+  .genus-card.has-photo {
+    background-image: linear-gradient(180deg, rgba(10,20,16,0.15) 0%, rgba(10,20,16,0.55) 55%, rgba(10,20,16,0.92) 100%), var(--card-photo);
+    background-size: cover;
+    background-position: center 30%;
+  }
+  .genus-card.has-photo .gn-icon {
+    position: absolute; top: 8px; right: 8px;
+    width: 28px; height: 28px; font-size: 17px;
+    background: rgba(5,11,7,0.78);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0; opacity: 0.95;
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(95,208,127,0.3);
+  }
+  .genus-card.has-photo .gn-fr { text-shadow: 0 2px 6px rgba(0,0,0,0.85); }
+  .genus-card.has-photo .gn-lat { color: var(--fg); opacity: 0.85; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+  .genus-card { position: relative; }
+
+  /* Animation flip + glow doré sur card fraîchement débloquée */
+  @keyframes card-unlock-flip {
+    0%   { transform: rotateY(0deg)   scale(1);    box-shadow: 0 0 0 rgba(244,192,74,0); }
+    35%  { transform: rotateY(180deg) scale(1.05); box-shadow: 0 0 24px 6px rgba(244,192,74,0.85); }
+    70%  { transform: rotateY(360deg) scale(1.05); box-shadow: 0 0 30px 8px rgba(244,192,74,0.7); }
+    100% { transform: rotateY(360deg) scale(1);    box-shadow: 0 0 0 rgba(244,192,74,0); }
+  }
+  .genus-card.just-unlocked {
+    animation: card-unlock-flip 0.7s ease-out 1;
+    transform-style: preserve-3d;
+    z-index: 2;
+  }
+
+  /* Filtre famille (dropdown) — P3 */
+  .family-filter-row {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 2px;
+  }
+  .family-filter-row label {
+    font-size: 11px; color: var(--fg-dim);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    white-space: nowrap;
+  }
+  .family-select {
+    flex: 1;
+    background: var(--bg-elev); color: var(--fg);
+    border: 1px solid #2e4d39; border-radius: 10px;
+    padding: 9px 12px; font-size: 13px; outline: none;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='%239bb4a3'><path d='M6 8L0 0h12z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .family-select:focus { border-color: var(--accent-dim); }
+
 </style>
 </head>
 <body>
@@ -713,6 +825,12 @@
         <button class="filter-pill" data-filter="tres-rare">🔴 Très rares</button>
         <button class="filter-pill" data-filter="legendaire">👑 Légendaires</button>
         <button class="filter-pill" data-filter="endemic">⭐ Endémiques</button>
+      </div>
+      <div class="family-filter-row">
+        <label for="familySelect">Famille</label>
+        <select id="familySelect" class="family-select">
+          <option value="">Toutes les familles</option>
+        </select>
       </div>
     </div>
 
@@ -880,6 +998,12 @@ const state = {
   filter: 'all',
   search: '',
   lastIdentified: null, // { genus, speciesLatin } pour highlight
+  // S5 ajouts :
+  wikiMem: new Map(),         // genus → { extract, thumbnail, sourceUrl, sourceTitle, empty? } (miroir IDB en RAM)
+  familyFilter: '',           // valeur du dropdown famille (vide = toutes)
+  familyTop15: [],            // [{ family, count }] calculé au boot
+  justUnlockedGenus: null,    // genus à animer au prochain render pokédex
+  cardObserver: null,         // IntersectionObserver pour lazy-fetch photos cards
 };
 
 // ============================================================
@@ -922,7 +1046,31 @@ function fuzzyMatch(needle, haystack) {
 // ============================================================
 // STORAGE / UNLOCKED
 // ============================================================
+
+// S5 — P4 : migration douce localStorage florescence.* → floradex.*
+// Stratégie conservative : on COPIE les clés vers leur équivalent floradex.* mais
+// on continue à lire/écrire les clés florescence.* comme canonique (cf. handoff #5
+// "NE PAS renommer pour ne pas casser les data users"). Cette shadow copy prépare
+// une future bascule en S6+ sans risque côté users actuels.
+function migrateStorageKeysIfNeeded() {
+  const pairs = [
+    [STORE_KEY_API,      'floradex.plantnet.apiKey'],
+    [STORE_KEY_PROJECT,  'floradex.plantnet.project'],
+    [STORE_KEY_BOOST,    'floradex.plantnet.boost'],
+    [STORE_KEY_UNLOCKED, 'floradex.unlocked.genera'],
+  ];
+  try {
+    for (const [oldK, newK] of pairs) {
+      const oldV = localStorage.getItem(oldK);
+      const newV = localStorage.getItem(newK);
+      // Recopie ancien → nouveau si absent côté nouveau
+      if (oldV !== null && newV === null) localStorage.setItem(newK, oldV);
+    }
+  } catch(e) { /* localStorage indispo (mode privé, quota) : tant pis, on continue */ }
+}
+
 function loadSettings() {
+  migrateStorageKeysIfNeeded();
   state.apiKey = localStorage.getItem(STORE_KEY_API) || '';
   state.project = localStorage.getItem(STORE_KEY_PROJECT) || 'weurope';
   const b = localStorage.getItem(STORE_KEY_BOOST);
@@ -949,6 +1097,17 @@ function unlock(genus) {
   state.unlocked.add(genus);
   localStorage.setItem(STORE_KEY_UNLOCKED, JSON.stringify([...state.unlocked]));
   updateProgressBadge();
+  // S5 : marque pour l'animation flip + glow doré au prochain render du pokédex.
+  state.justUnlockedGenus = genus;
+  // S5 : précharge la fiche Wikipedia en arrière-plan pour avoir la photo prête
+  // quand l'utilisateur va consulter la card (~1s après l'identification typique).
+  const g = state.generaIndex && state.generaIndex.byGenus.get(genus);
+  if (g && !state.wikiMem.has(genus)) {
+    const speciesType = getSpeciesTypeLatin(g);
+    getGenusInfo(genus, speciesType).then(info => {
+      state.wikiMem.set(genus, info || { empty: true });
+    });
+  }
   return true;
 }
 function resetProgress() {
@@ -1018,10 +1177,54 @@ async function loadData() {
     const ms = Math.round(performance.now() - t0);
     $('floraStatus').textContent = `✅ Bases chargées : ${flora.totalCount} espèces, ${genera.totalGenera} genres (${genera.frenchNamesCoverage.percentCovered}% noms FR) — ${ms} ms`;
     updateProgressBadge();
+
+    // S5 : calcule le top 15 des familles botaniques pour le dropdown filtre
+    computeFamilyTop15();
+    populateFamilySelect();
+
+    // S5 : hydrate le miroir RAM des données Wikipedia depuis IndexedDB (non bloquant)
+    wikiCacheGetAll().then(map => {
+      state.wikiMem = map;
+      // Si l'utilisateur est déjà sur une fiche ou le pokédex, on rafraîchit pour
+      // afficher tout ce qu'on avait en cache.
+      if (location.hash.startsWith('#/genre/')) {
+        const g = decodeURIComponent(location.hash.replace('#/genre/', ''));
+        renderDetail(g);
+      } else if (location.hash.startsWith('#/pokedex')) {
+        refreshGenusList();
+      }
+    });
   } catch (e) {
     $('floraStatus').textContent = '⚠ Échec chargement : ' + e.message;
     console.error(e);
   }
+}
+
+// S5 : calcule les 15 familles botaniques avec le plus de genres
+function computeFamilyTop15() {
+  if (!state.generaIndex) return;
+  const counts = new Map();
+  for (const g of state.generaIndex.list) {
+    const fam = g.familleFr || g.family || '';
+    if (!fam) continue;
+    counts.set(fam, (counts.get(fam) || 0) + 1);
+  }
+  const sorted = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15)
+    .map(([family, count]) => ({ family, count }));
+  state.familyTop15 = sorted;
+}
+
+// S5 : remplit le dropdown famille avec le top 15
+function populateFamilySelect() {
+  const sel = $('familySelect');
+  if (!sel || !state.familyTop15.length) return;
+  // garde l'option "Toutes les familles" en premier
+  const opts = ['<option value="">Toutes les familles</option>']
+    .concat(state.familyTop15.map(f =>
+      `<option value="${escapeHtml(f.family)}">${escapeHtml(f.family)} (${f.count})</option>`));
+  sel.innerHTML = opts.join('');
 }
 
 function lookupSpecies(scientificName, gbifId) {
@@ -1107,8 +1310,9 @@ function refreshGenusList() {
   const list = state.generaIndex.list;
   const f = state.filter;
   const q = state.search;
+  const famF = state.familyFilter;  // S5 : filtre famille (P3)
   const filtered = list.filter(g => {
-    // Filtres
+    // Filtres statut
     if (f === 'unlocked' && !state.unlocked.has(g.genus)) return false;
     if (f === 'calanques' && g.calanquesCount === 0) return false;
     if (f === 'commune' && g.statutDominant !== 'commune') return false;
@@ -1117,6 +1321,8 @@ function refreshGenusList() {
     if (f === 'tres-rare' && g.statutDominant !== 'tres-rare') return false;
     if (f === 'legendaire' && g.statutDominant !== 'legendaire' && g.statutMin !== 'legendaire') return false;
     if (f === 'endemic' && g.endemicCount === 0) return false;
+    // S5 : filtre famille (cumulatif avec le statut)
+    if (famF && g.familleFr !== famF && g.family !== famF) return false;
     // Recherche fuzzy
     if (q) {
       const hay = g.nomFrUsuel + ' ' + g.genus + ' ' + (g.familleFr || '') + ' ' + (g.speciesEmblematique?.nomFr || '');
@@ -1144,6 +1350,50 @@ function refreshGenusList() {
   grid.querySelectorAll('.genus-card').forEach(card => {
     card.addEventListener('click', () => setRoute('#/genre/' + encodeURIComponent(card.dataset.genus)));
   });
+
+  // S5 : si une card vient juste d'être débloquée, son animation tourne maintenant.
+  // On la nettoie après une frame pour qu'elle ne reparte pas au prochain render.
+  if (state.justUnlockedGenus) {
+    setTimeout(() => { state.justUnlockedGenus = null; }, 800);
+  }
+
+  // S5 : lazy-fetch des photos Wikipedia pour les cards découvertes visibles
+  setupCardObserver(grid);
+}
+
+// S5 : Observer les cards découvertes qui entrent dans le viewport et fetcher leur photo
+// si pas encore en cache. Throttle global déjà géré dans wikiClient (1 req/s).
+function setupCardObserver(grid) {
+  if (state.cardObserver) state.cardObserver.disconnect();
+  if (!('IntersectionObserver' in window)) return;
+
+  state.cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const card = entry.target;
+      const genus = card.dataset.genus;
+      if (!genus) return;
+      state.cardObserver.unobserve(card);
+      // Déjà en cache ? rien à faire (la card a déjà la photo si elle existe)
+      if (state.wikiMem.has(genus)) return;
+      const g = state.generaIndex.byGenus.get(genus);
+      if (!g) return;
+      const speciesType = getSpeciesTypeLatin(g);
+      getGenusInfo(genus, speciesType).then(info => {
+        state.wikiMem.set(genus, info || { empty: true });
+        // Si la card est toujours dans le DOM et qu'on a une photo, on met à jour son style
+        if (info && info.thumbnail && document.body.contains(card)) {
+          card.style.setProperty('--card-photo', `url('${info.thumbnail}')`);
+          card.classList.add('has-photo');
+        }
+      });
+    });
+  }, { rootMargin: '200px 0px' });
+
+  // On observe uniquement les cards découvertes qui n'ont pas encore de photo affichée
+  grid.querySelectorAll('.genus-card.unlocked:not(.has-photo)').forEach(card => {
+    state.cardObserver.observe(card);
+  });
 }
 
 function renderGenusCard(g) {
@@ -1152,15 +1402,25 @@ function renderGenusCard(g) {
   const isEnd = g.endemicCount > 0;
   const num = String(g.pokedexNumber || 0).padStart(3, '0');
   const icon = getFamilyIcon(g);
+
+  // S5 : photo Wikipedia en background si genre découvert + photo en cache
+  const wikiInfo = state.wikiMem.get(g.genus);
+  const hasPhoto = isUnlocked && wikiInfo && wikiInfo.thumbnail;
+  const justUnlocked = state.justUnlockedGenus === g.genus;
+  const styleAttr = hasPhoto
+    ? ` style="--card-photo: url('${escapeHtml(wikiInfo.thumbnail)}')"`
+    : '';
   const cls = [
     'genus-card',
     isUnlocked ? 'unlocked' : 'locked',
     isLeg ? 'is-legendaire' : '',
+    hasPhoto ? 'has-photo' : '',
+    justUnlocked ? 'just-unlocked' : '',
   ].filter(Boolean).join(' ');
   // Affichage silhouette si non découvert : icône floutée + nom usuel toujours visible
   // (on ne masque pas le nom — l'utilisateur veut savoir ce qu'il chasse)
   return `
-    <div class="${cls}" data-genus="${escapeHtml(g.genus)}">
+    <div class="${cls}" data-genus="${escapeHtml(g.genus)}"${styleAttr}>
       <div class="pokedex-num">N°${num}</div>
       <div class="gn-icon">${icon}</div>
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
@@ -1332,12 +1592,51 @@ function renderDetail(genus) {
   const habitat = getHabitatHint(g);
   const anecdote = getAnecdote(g);
 
+  // S5 : info Wikipedia (peuplée en RAM au boot depuis IDB, sinon undefined → on fetch)
+  const wikiInfo = state.wikiMem.get(g.genus);
+  // États possibles : loading (undefined), failed (empty), text-only, photo
+  const wikiState =
+    wikiInfo === undefined ? 'loading' :
+    wikiInfo.empty         ? 'failed'  :
+    wikiInfo.thumbnail     ? 'photo'   :
+    wikiInfo.extract       ? 'text-only' : 'failed';
+
+  // Hero visuel : photo Wikipedia OU skeleton OU emoji famille (fallback)
+  let heroVisual;
+  if (wikiState === 'photo') {
+    heroVisual = `
+      <div class="hero-photo-wrap">
+        <img class="hero-photo" src="${escapeHtml(wikiInfo.thumbnail)}" alt="${escapeHtml(g.nomFrUsuel)}" onload="this.classList.add('loaded'); this.parentNode.querySelector('.hero-photo-skeleton').classList.add('hidden');" onerror="this.style.display='none';" />
+        <div class="hero-photo-skeleton">${icon}</div>
+        <div class="hero-photo-credit">📷 Wikipedia</div>
+      </div>`;
+  } else if (wikiState === 'loading') {
+    heroVisual = `
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-skeleton">${icon}</div>
+      </div>`;
+  } else {
+    // failed ou text-only : on garde l'icône famille comme avant
+    heroVisual = `
+      <div class="hero-icon-wrap">
+        <div class="hero-icon">${icon}</div>
+      </div>`;
+  }
+
+  // Description : extrait Wikipedia si dispo, sinon heuristique S3
+  let descBlock;
+  if (wikiInfo && wikiInfo.extract) {
+    descBlock = `
+      <p style="margin:0 0 6px; font-size:14px;">${escapeHtml(wikiInfo.extract)}</p>
+      <div class="wiki-source">📖 Source : <a href="${escapeHtml(wikiInfo.sourceUrl)}" target="_blank" rel="noopener">Wikipedia · ${escapeHtml(wikiInfo.sourceTitle)}</a></div>`;
+  } else {
+    descBlock = `<p style="margin:0; font-size:14px;">${getGenusDescription(g)}</p>`;
+  }
+
   const html = `
     <div class="detail-hero ${isUnlocked ? 'unlocked' : ''} ${isLeg ? 'is-legendaire' : ''}">
       <div class="hero-num">N°${num} / 938</div>
-      <div class="hero-icon-wrap">
-        <div class="hero-icon">${icon}</div>
-      </div>
+      ${heroVisual}
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
       <div class="gn-lat">${escapeHtml(g.genus)} · ${escapeHtml(g.familleFr || g.family || '')}</div>
       <div class="badges" style="justify-content:center;">
@@ -1356,7 +1655,7 @@ function renderDetail(genus) {
 
     <div class="detail-section">
       <h3>📖 Description</h3>
-      <p style="margin:0; font-size:14px;">${getGenusDescription(g)}</p>
+      ${descBlock}
     </div>
 
     <div class="detail-section">
@@ -1398,6 +1697,22 @@ function renderDetail(genus) {
   `;
   $('detailContent').innerHTML = html;
   $('btnDetailIdentify').addEventListener('click', () => setRoute('#/identify'));
+
+  // S5 : si on n'a pas encore tenté de fetcher Wikipedia pour ce genre, on le fait
+  // en arrière-plan. Quand la donnée arrive, on re-render uniquement si on est
+  // toujours sur cette même fiche (l'utilisateur peut avoir navigué entre-temps).
+  if (wikiState === 'loading') {
+    const speciesType = getSpeciesTypeLatin(g);
+    getGenusInfo(g.genus, speciesType).then(info => {
+      // Met à jour le miroir RAM (info peut être null = "tried & nothing found")
+      state.wikiMem.set(g.genus, info || { empty: true });
+      // Re-render seulement si on est encore sur cette fiche
+      const expected = '#/genre/' + encodeURIComponent(g.genus);
+      if (location.hash === expected) {
+        renderDetail(g.genus);
+      }
+    });
+  }
 }
 
 function renderSpeciesRow(s, identifiedLatin) {
@@ -1765,9 +2080,11 @@ function closeSettings() { $('settingsModal').classList.remove('open'); }
 // ============================================================
 // IndexedDB — historique (BONUS S3 pour S4)
 // ============================================================
-const DB_NAME = 'florescence';
-const DB_VER = 1;
+const DB_NAME = 'florescence';        // NE PAS renommer (clé partagée avec data users existants)
+const DB_VER = 2;                     // S5 : bump v1 → v2 pour ajouter wikiCache
 const STORE_HIST = 'history';
+const STORE_WIKI = 'wikiCache';       // S5 : cache résumés + photos Wikipedia
+const WIKI_TTL_MS = 30 * 24 * 3600 * 1000;  // 30 jours
 
 let _db = null;
 function openDB() {
@@ -1776,10 +2093,16 @@ function openDB() {
     const req = indexedDB.open(DB_NAME, DB_VER);
     req.onupgradeneeded = (e) => {
       const db = e.target.result;
+      // Migration douce : on crée les stores manquants, on ne touche pas à ceux qui existent.
+      // Supporte les anciens users (DB v1) et les nouveaux (DB v2 d'emblée).
       if (!db.objectStoreNames.contains(STORE_HIST)) {
         const store = db.createObjectStore(STORE_HIST, { keyPath: 'id', autoIncrement: true });
         store.createIndex('ts', 'ts');
         store.createIndex('genus', 'genus');
+      }
+      if (!db.objectStoreNames.contains(STORE_WIKI)) {
+        const wiki = db.createObjectStore(STORE_WIKI, { keyPath: 'genus' });
+        wiki.createIndex('fetchedAt', 'fetchedAt');
       }
     };
     req.onsuccess = () => { _db = req.result; resolve(_db); };
@@ -1818,6 +2141,211 @@ async function dbListHistory(limit = 100) {
 }
 
 // ============================================================
+// S5 — CACHE WIKIPEDIA (IndexedDB store 'wikiCache')
+// ============================================================
+
+async function wikiCacheGet(genus) {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_WIKI, 'readonly');
+      const req = tx.objectStore(STORE_WIKI).get(genus);
+      req.onsuccess = () => {
+        const v = req.result;
+        if (!v) return resolve(null);
+        // TTL : si > 30 jours on considère "stale", on retourne null pour forcer refetch
+        if (Date.now() - (v.fetchedAt || 0) > WIKI_TTL_MS) return resolve(null);
+        resolve(v);
+      };
+      req.onerror = () => resolve(null);
+    });
+  } catch(e) { return null; }
+}
+
+async function wikiCacheSet(genus, data) {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_WIKI, 'readwrite');
+      tx.objectStore(STORE_WIKI).put({ genus, ...data, fetchedAt: Date.now() });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    });
+  } catch(e) {}
+}
+
+// Lecture en lot pour le pokédex (cards) — récupère tout le store puis filtre en JS
+async function wikiCacheGetAll() {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORE_WIKI, 'readonly');
+      const req = tx.objectStore(STORE_WIKI).getAll();
+      req.onsuccess = () => {
+        const map = new Map();
+        for (const v of (req.result || [])) {
+          if (Date.now() - (v.fetchedAt || 0) <= WIKI_TTL_MS) {
+            map.set(v.genus, v);
+          }
+        }
+        resolve(map);
+      };
+      req.onerror = () => resolve(new Map());
+    });
+  } catch(e) { return new Map(); }
+}
+
+// ============================================================
+// S5 — CLIENT WIKIPEDIA (queue + résumé + photo + fallback Wikidata P18)
+// ============================================================
+
+const WIKI_FR_SUMMARY = 'https://fr.wikipedia.org/api/rest_v1/page/summary/';
+const WIKI_FR_PAGE    = 'https://fr.wikipedia.org/wiki/';
+const WIKIDATA_ENTITY = 'https://www.wikidata.org/wiki/Special:EntityData/';
+
+// File d'attente politesse : max 1 fetch Wikipedia toutes les ~1 s.
+// Évite de se faire rate-limiter et reste correct pour les serveurs.
+const WIKI_THROTTLE_MS = 1100;
+let _wikiQueueTail = Promise.resolve();
+let _wikiLastFetch = 0;
+function wikiThrottle() {
+  const p = _wikiQueueTail.then(async () => {
+    const since = Date.now() - _wikiLastFetch;
+    if (since < WIKI_THROTTLE_MS) {
+      await new Promise(r => setTimeout(r, WIKI_THROTTLE_MS - since));
+    }
+    _wikiLastFetch = Date.now();
+  });
+  _wikiQueueTail = p.catch(() => {});
+  return p;
+}
+
+// Upgrade d'une thumbnail Wikipedia : passe de 320px à 640px quand l'URL Commons le permet.
+function upgradeThumb(url) {
+  if (!url) return url;
+  // URLs typiques : .../thumb/.../320px-Foo.jpg → on remplace par 640px
+  return url.replace(/\/(\d{2,4})px-/, (m, w) => {
+    const W = parseInt(w, 10);
+    if (W >= 480) return m; // déjà assez grand
+    return '/640px-';
+  });
+}
+
+async function fetchWikiSummary(title) {
+  await wikiThrottle();
+  try {
+    const url = WIKI_FR_SUMMARY + encodeURIComponent(title);
+    const resp = await fetch(url, {
+      headers: { 'Accept': 'application/json' }
+      // Note : User-Agent custom impossible depuis un navigateur (header bloqué par CORS),
+      // mais Wikipedia accepte les requêtes anonymes raisonnables sans souci.
+    });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch(e) { return null; }
+}
+
+async function fetchWikidataImage(qid) {
+  if (!qid) return null;
+  await wikiThrottle();
+  try {
+    const resp = await fetch(WIKIDATA_ENTITY + encodeURIComponent(qid) + '.json');
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    const entity = data.entities && data.entities[qid];
+    const claims = entity && entity.claims && entity.claims.P18;
+    if (!claims || !claims.length) return null;
+    const filename = claims[0].mainsnak?.datavalue?.value;
+    if (!filename) return null;
+    // Commons : construire l'URL Special:FilePath/{filename}?width=640
+    return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename) + '?width=640';
+  } catch(e) { return null; }
+}
+
+// Pipeline principal : essaye le genre, sinon l'espèce-type, sinon Wikidata pour la photo.
+// Retourne { extract, thumbnail, sourceUrl, sourceTitle } ou null.
+async function getGenusInfoNetwork(genus, speciesTypeLatin) {
+  // 1. Essai direct sur le nom du genre
+  let s = await fetchWikiSummary(genus);
+
+  // Wikipedia REST renvoie un type 'disambiguation' parfois — on ne le garde pas.
+  if (s && s.type === 'disambiguation') s = null;
+  // Si la page existe mais n'a pas d'extract utile, on continue à creuser
+  if (s && (!s.extract || s.extract.length < 40) && speciesTypeLatin) {
+    s = null;
+  }
+
+  let usedTitle = genus;
+  // 2. Fallback : l'espèce-type (premier binôme du genre dans paca-flora)
+  if (!s && speciesTypeLatin) {
+    const s2 = await fetchWikiSummary(speciesTypeLatin);
+    if (s2 && s2.type !== 'disambiguation' && s2.extract && s2.extract.length >= 40) {
+      s = s2;
+      usedTitle = speciesTypeLatin;
+    }
+  }
+
+  // Aucune page utile : on essaie quand même de récupérer une image via Wikidata
+  // si on a un Qid issu d'une page vide.
+  let thumbnail = s?.thumbnail?.source ? upgradeThumb(s.thumbnail.source) : null;
+  let extract = s?.extract || null;
+  let qid = s?.wikibase_item || null;
+
+  // Fallback image : Wikidata P18 si pas de thumbnail
+  if (!thumbnail && qid) {
+    thumbnail = await fetchWikidataImage(qid);
+  }
+
+  if (!extract && !thumbnail) return null;
+
+  return {
+    extract,
+    thumbnail,
+    sourceTitle: usedTitle,
+    sourceUrl: WIKI_FR_PAGE + encodeURIComponent(usedTitle.replace(/ /g, '_')),
+  };
+}
+
+// API publique : cache d'abord, réseau ensuite.
+// Retourne null si rien à montrer (la fiche retombera sur l'heuristique S3).
+async function getGenusInfo(genus, speciesTypeLatin) {
+  // 1. Cache hit ?
+  const cached = await wikiCacheGet(genus);
+  if (cached) {
+    // Marqueur 'empty' pour les genres qu'on a déjà essayés mais où on n'a rien trouvé,
+    // évite de retaper Wikipedia toutes les 5 secondes.
+    if (cached.empty) return null;
+    return cached;
+  }
+
+  // 2. Réseau
+  const fresh = await getGenusInfoNetwork(genus, speciesTypeLatin);
+
+  if (fresh) {
+    await wikiCacheSet(genus, fresh);
+    return fresh;
+  } else {
+    // On garde une trace négative pour ne pas re-fetcher en boucle (TTL 30j la fera expirer),
+    // MAIS uniquement si on était bien en ligne — sinon c'était un échec réseau,
+    // pas une absence de page Wikipedia. On retentera au prochain passage en ligne.
+    if (navigator.onLine !== false) {
+      await wikiCacheSet(genus, { empty: true });
+    }
+    return null;
+  }
+}
+
+// Helper : récupérer le binôme de l'espèce-type d'un genre depuis l'index flora
+function getSpeciesTypeLatin(g) {
+  if (g.speciesEmblematique && g.speciesEmblematique.nomLatin) {
+    return g.speciesEmblematique.nomLatin;
+  }
+  const list = state.flora && state.flora.byGenus.get(g.genus);
+  if (list && list.length) return list[0].nomLatin;
+  return null;
+}
+
+// ============================================================
 // WIRING
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1852,6 +2380,15 @@ document.addEventListener('DOMContentLoaded', () => {
       refreshGenusList();
     });
   });
+
+  // S5 : dropdown famille (P3)
+  const famSel = $('familySelect');
+  if (famSel) {
+    famSel.addEventListener('change', () => {
+      state.familyFilter = famSel.value;
+      refreshGenusList();
+    });
+  }
 
   // Detail back
   $('btnBack').addEventListener('click', () => {

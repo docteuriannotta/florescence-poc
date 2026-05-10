@@ -1,8 +1,10 @@
-# Florescence — Pokédex floral PACA (PWA)
+# Floradex — Pokédex floral (PWA)
 
-Application Pokédex floral pour la région PACA. Identifie une fleur avec ton appareil photo (Pl@ntNet) → débloque la fiche du **genre** dans le Pokédex (938 fiches, 3970 espèces).
+Application Pokédex floral. Identifie une fleur avec ton appareil photo (Pl@ntNet) → débloque la fiche du **genre** dans le Pokédex (938 fiches, 3970 espèces, base PACA).
 
-> Session 3 — refonte sur le pivot **Pokédex au niveau du genre** validé en test terrain Calanques (mai 2026).
+> Session 5 — fiches enrichies Wikipedia (photo + description), animation de déblocage, filtre famille botanique (mai 2026).
+
+> Renommage Florescence → **Floradex** acté en S4. Le dépôt GitHub conserve son ancien nom (`florescence-poc`) pour ne pas casser l'URL des PWA déjà installées.
 
 ## Contenu du dossier
 
@@ -114,8 +116,24 @@ Le Service Worker v2 (`CACHE_VERSION='florescence-v2-genus-2026-05-10-a'`) **inv
 - Clé API en `localStorage`. Doit être en `public` sur le compte Pl@ntNet (sinon CORS bloque).
 - Aucun backend, aucune télémétrie, zéro dépendance JS externe.
 
+## Nouveautés Session 5 (v2.2-e — 11 mai 2026)
+
+- 📖 **Fiches enrichies Wikipedia** : photo de hero + description encyclopédique récupérées via Wikipedia FR REST. Fallback sur l'espèce-type si la page du genre n'existe pas, puis Wikidata P18 pour la photo en dernier recours. Fallback ultime sur l'heuristique S3 (jamais d'écran blanc).
+- 🖼 **Photo Wikipedia sur les cards du Pokédex** : les genres découverts arborent leur photo en fond de carte (chargement lazy via IntersectionObserver, throttle 1 req/s pour rester poli avec Wikipedia).
+- ✨ **Animation de déblocage** : flip + glow doré ~700 ms sur la carte d'un genre fraîchement identifié.
+- 🌿 **Filtre famille botanique** : dropdown des 15 familles les plus représentées en PACA, cumulatif avec les filtres de rareté existants.
+- 💾 **Cache IndexedDB `wikiCache`** : nouveau store dans la DB `florescence` (ne pas renommer !), TTL 30 jours, miroir RAM hydraté au boot pour des renders synchrones.
+- 🔄 **Migration douce localStorage** : shadow copy `florescence.* → floradex.*` au boot (passive, n'affecte pas les data canoniques).
+
+## Nouveautés Session 4 (v2.2-d — 11 mai 2026)
+
+- 🎨 Logo Pokéball botanique conçu via Canva (cercle vert/crème, médaillon doré, fleur 8 pétales). Mot "FLORADEX" en arc doré, typo Nunito Bold.
+- 🔤 Rebrand intégral Florescence → Floradex côté UI (title, manifest, header, share). Clés `localStorage` `florescence.*` et DB IndexedDB `florescence` conservées pour ne pas casser les data users existants.
+
 ## Versions
 
+- v2.2-e — 11 mai 2026 — Session 5 (fiches Wikipedia enrichies, anim déblocage, filtre famille)
+- v2.2-d — 11 mai 2026 — Session 4 (logo Canva + rebrand)
 - v2.0 — 10 mai 2026 — Session 3 (Pokédex par genre, 938 fiches)
 - v1.0 — 9 mai 2026 — Session 2 (POC Pl@ntNet)
 
