@@ -13,29 +13,34 @@
 <title>Florescence — Pokédex floral PACA</title>
 <style>
   :root {
-    --bg: #0f1c14;
-    --bg-elev: #16271c;
-    --bg-card: #1d3326;
-    --bg-deep: #0a140d;
-    --fg: #e8f3ec;
+    --bg: #0a1410;
+    --bg-elev: #122119;
+    --bg-card: #1a2e22;
+    --bg-card-2: #213a2c;
+    --bg-deep: #050b07;
+    --fg: #eef7f0;
     --fg-dim: #9bb4a3;
     --fg-faint: #6b8775;
     --accent: #5fd07f;
     --accent-dim: #3a9a55;
-    --accent-glow: rgba(95,208,127,0.18);
+    --accent-bright: #8ee6a4;
+    --accent-glow: rgba(95,208,127,0.22);
+    --gold: #f4c04a;
+    --gold-dim: #c89a2e;
     --warn: #e0b94a;
     --err: #e36a6a;
     --paca: #5fd07f;
     --calanques: #4cc8e8;
-    --legendaire: #e0b94a;
+    --legendaire: #f4c04a;
     --hors: #b07fd0;
     --commune: #5fd07f;
     --peu-commune: #4cc8e8;
-    --rare: #e08a4a;
-    --tres-rare: #e36a6a;
-    --leg: #e0b94a;
+    --rare: #f08a4a;
+    --tres-rare: #f06a6a;
+    --leg: #f4c04a;
     --radius: 14px;
     --radius-lg: 18px;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -51,30 +56,55 @@
   a { color: var(--accent); text-decoration: none; }
   a:active { opacity: 0.7; }
 
-  /* ============ HEADER ============ */
+  /* ============ HEADER POKEDEX ============ */
   header {
-    padding: 12px 16px;
-    border-bottom: 1px solid #243d2c;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, #122119 0%, #0a1410 100%);
+    border-bottom: 2px solid var(--accent-dim);
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    position: sticky; top: 0; background: var(--bg); z-index: 10;
-    padding-top: max(12px, env(safe-area-inset-top));
+    position: sticky; top: 0; z-index: 10;
+    padding-top: max(10px, env(safe-area-inset-top));
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(95,208,127,0.18);
   }
   header .brand { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; cursor: pointer; }
-  header .brand h1 { font-size: 17px; margin: 0; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  header .brand .leaf { color: var(--accent); font-size: 20px; }
-  header .progress {
-    font-size: 12px; color: var(--fg-dim);
-    background: var(--bg-elev);
-    padding: 5px 10px; border-radius: 999px;
-    border: 1px solid #2e4d39;
-    white-space: nowrap;
+  header .led {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b6f0c8, var(--accent) 55%, var(--accent-dim) 100%);
+    box-shadow: 0 0 12px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
   }
-  header .progress strong { color: var(--accent); font-weight: 600; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 8px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25); }
+    50% { box-shadow: 0 0 18px var(--accent), 0 0 26px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25); }
+  }
+  header .brand h1 {
+    font-size: 16px; margin: 0; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: var(--fg);
+  }
+  header .brand h1 .glow { color: var(--accent-bright); text-shadow: 0 0 8px var(--accent-glow); }
+  header .progress {
+    font-size: 11px; color: var(--fg-dim);
+    background: var(--bg-deep);
+    padding: 6px 11px; border-radius: 8px;
+    border: 1px solid var(--accent-dim);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    letter-spacing: 0.5px;
+  }
+  header .progress strong {
+    color: var(--accent-bright); font-weight: 700;
+    text-shadow: 0 0 6px var(--accent-glow);
+  }
   header .icon-btn {
-    background: var(--bg-elev); border: 1px solid #2e4d39; color: var(--fg);
-    border-radius: 999px; width: 38px; height: 38px; font-size: 18px;
+    background: var(--bg-deep); border: 1px solid var(--accent-dim); color: var(--fg);
+    border-radius: 50%; width: 38px; height: 38px; font-size: 18px;
     cursor: pointer; flex-shrink: 0;
     display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.3);
   }
   header .icon-btn:active { background: var(--bg-card); }
 
@@ -178,47 +208,102 @@
 
   .genus-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px;
   }
+  /* Card style POKÉDEX */
   .genus-card {
-    background: var(--bg-card); border: 1px solid #2e4d39;
+    background: linear-gradient(160deg, var(--bg-card-2) 0%, var(--bg-card) 100%);
+    border: 1px solid rgba(95,208,127,0.18);
     border-radius: var(--radius);
-    padding: 12px; cursor: pointer;
-    display: flex; flex-direction: column; gap: 4px;
-    transition: transform 0.05s, border-color 0.15s;
-    position: relative; overflow: hidden;
+    padding: 12px 12px 10px;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    transition: transform 0.08s, border-color 0.15s, box-shadow 0.15s;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+    min-height: 165px;
   }
-  .genus-card:active { transform: scale(0.98); }
+  .genus-card:active { transform: scale(0.97); }
+  .genus-card .pokedex-num {
+    position: absolute; top: 8px; right: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 700;
+    color: var(--fg-faint); letter-spacing: 0.5px;
+  }
+  .genus-card .gn-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg-deep);
+    border: 2px solid rgba(95,208,127,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; line-height: 1;
+    margin: 4px 0 8px;
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.4);
+  }
   .genus-card.unlocked {
     border-color: var(--accent-dim);
-    background: linear-gradient(135deg, var(--bg-card), rgba(95,208,127,0.06));
+    box-shadow: 0 4px 18px rgba(95,208,127,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
   }
-  .genus-card.unlocked::before {
-    content: "✓"; position: absolute; top: 8px; right: 10px;
-    color: var(--accent); font-size: 16px; font-weight: 700;
+  .genus-card.unlocked .pokedex-num {
+    color: var(--accent-bright);
+    text-shadow: 0 0 6px var(--accent-glow);
+  }
+  .genus-card.unlocked .gn-icon {
+    border-color: var(--accent);
+    background: radial-gradient(circle at 30% 30%, rgba(95,208,127,0.18), var(--bg-deep) 75%);
+  }
+  /* Card LÉGENDAIRE — couronne dorée */
+  .genus-card.is-legendaire {
+    border-color: var(--gold-dim);
+    background: linear-gradient(160deg, rgba(244,192,74,0.08), var(--bg-card) 70%);
+  }
+  .genus-card.is-legendaire.unlocked {
+    box-shadow: 0 4px 22px rgba(244,192,74,0.25), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .genus-card.is-legendaire .gn-icon {
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(244,192,74,0.25), inset 0 -3px 6px rgba(0,0,0,0.4);
+  }
+  /* Card LOCKED (silhouette) */
+  .genus-card.locked .gn-icon {
+    color: rgba(40,60,48,0.95);
+    filter: brightness(0.55) blur(0.4px);
+  }
+  .genus-card.locked .gn-fr {
+    color: var(--fg-faint);
+    font-style: normal;
   }
   .genus-card .gn-fr {
-    font-weight: 600; font-size: 14px;
-    line-height: 1.25; min-height: 36px;
+    font-weight: 600; font-size: 13.5px;
+    line-height: 1.25;
     color: var(--fg);
+    margin-top: auto;
+    overflow: hidden; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   }
   .genus-card .gn-lat {
-    font-style: italic; font-size: 11px; color: var(--fg-faint);
+    font-style: italic; font-size: 10.5px; color: var(--fg-faint);
     margin-top: 2px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .genus-card .gn-meta {
-    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
-    font-size: 10px;
+    display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px;
+    font-size: 9.5px;
   }
   .genus-card .gn-chip {
-    background: var(--bg-deep); border: 1px solid #2e4d39;
+    background: var(--bg-deep); border: 1px solid rgba(95,208,127,0.18);
     color: var(--fg-dim);
     border-radius: 999px; padding: 2px 7px;
+    text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600;
   }
+  .genus-card .gn-chip.rar-commune { color: var(--commune); border-color: rgba(95,208,127,0.4); }
+  .genus-card .gn-chip.rar-peu-commune { color: var(--peu-commune); border-color: rgba(76,200,232,0.4); }
+  .genus-card .gn-chip.rar-rare { color: var(--rare); border-color: rgba(240,138,74,0.4); }
+  .genus-card .gn-chip.rar-tres-rare { color: var(--tres-rare); border-color: rgba(240,106,106,0.4); }
+  .genus-card .gn-chip.rar-legendaire { color: var(--gold); border-color: rgba(244,192,74,0.5); background: rgba(244,192,74,0.08); }
   .genus-card .gn-chip.cal { color: var(--calanques); border-color: rgba(76,200,232,0.4); }
-  .genus-card .gn-chip.leg { color: var(--legendaire); border-color: rgba(224,185,74,0.5); background: rgba(224,185,74,0.08); }
-  .genus-card .gn-chip.endemic { color: var(--legendaire); border-color: rgba(224,185,74,0.5); }
+  .genus-card .gn-chip.endemic { color: var(--gold); border-color: rgba(244,192,74,0.5); }
   .gn-rarity-dot {
     width: 8px; height: 8px; border-radius: 999px;
     display: inline-block; margin-right: 4px;
@@ -228,40 +313,93 @@
     text-align: center; padding: 40px 20px; color: var(--fg-dim);
   }
 
-  /* ============ DETAIL ============ */
+  /* ============ DETAIL POKEDEX ============ */
   .back-btn {
     display: inline-flex; align-items: center; gap: 6px;
-    background: var(--bg-elev); border: 1px solid #2e4d39;
+    background: var(--bg-elev); border: 1px solid var(--accent-dim);
     color: var(--fg); border-radius: 10px;
     padding: 8px 12px; font-size: 13px; cursor: pointer;
     margin-bottom: 14px;
   }
   .detail-hero {
-    background: var(--bg-card); border-radius: var(--radius-lg);
-    padding: 18px 16px;
+    background: linear-gradient(180deg, var(--bg-card-2), var(--bg-card));
+    border-radius: var(--radius-lg);
+    padding: 22px 16px 18px;
     margin-bottom: 14px;
-    border: 1px solid #2e4d39;
+    border: 2px solid var(--accent-dim);
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    position: relative; overflow: hidden;
   }
-  .detail-hero.unlocked { border-color: var(--accent-dim); box-shadow: 0 0 24px var(--accent-glow); }
+  .detail-hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% -20%, var(--accent-glow), transparent 60%);
+    pointer-events: none;
+  }
+  .detail-hero.unlocked { box-shadow: 0 8px 32px rgba(95,208,127,0.25); }
+  .detail-hero.is-legendaire {
+    border-color: var(--gold-dim);
+  }
+  .detail-hero.is-legendaire::before {
+    background: radial-gradient(circle at 50% -20%, rgba(244,192,74,0.28), transparent 60%);
+  }
+  .detail-hero .hero-num {
+    font-family: var(--font-mono);
+    font-size: 12px; font-weight: 700;
+    color: var(--accent-bright);
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 8px var(--accent-glow);
+    position: relative;
+  }
+  .detail-hero.is-legendaire .hero-num { color: var(--gold); text-shadow: 0 0 8px rgba(244,192,74,0.4); }
+  .detail-hero .hero-icon-wrap {
+    width: 96px; height: 96px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--bg-card-2), var(--bg-deep) 80%);
+    border: 3px solid var(--accent-dim);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5), inset 0 -4px 8px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .detail-hero.is-legendaire .hero-icon-wrap {
+    border-color: var(--gold);
+    box-shadow: 0 0 24px rgba(244,192,74,0.3), inset 0 -4px 8px rgba(0,0,0,0.3);
+  }
+  .detail-hero .hero-icon { font-size: 56px; line-height: 1; }
   .detail-hero .gn-fr {
-    font-size: 22px; font-weight: 700;
+    font-size: 24px; font-weight: 700;
     margin: 0 0 4px;
+    position: relative;
   }
   .detail-hero .gn-lat {
-    font-style: italic; color: var(--fg-dim); font-size: 14px;
-    margin-bottom: 10px;
+    font-style: italic; color: var(--fg-dim); font-size: 13px;
+    margin-bottom: 12px;
+    position: relative;
   }
   .detail-hero .stats {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    margin-top: 12px;
+    margin-top: 14px;
+    position: relative;
   }
   .detail-hero .stat {
-    text-align: center;
     background: var(--bg-deep); border-radius: 10px;
     padding: 10px 6px;
+    border: 1px solid rgba(95,208,127,0.18);
   }
-  .detail-hero .stat .v { font-size: 18px; font-weight: 700; color: var(--accent); }
-  .detail-hero .stat .l { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .detail-hero .stat .v { font-size: 20px; font-weight: 800; color: var(--accent-bright); font-family: var(--font-mono); }
+  .detail-hero .stat .l { font-size: 9.5px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .info-cell { background: var(--bg-deep); border: 1px solid rgba(95,208,127,0.18); border-radius: 10px; padding: 10px; }
+  .info-label { font-size: 10px; color: var(--fg-dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+  .info-value { font-size: 13px; color: var(--fg); font-weight: 500; }
+  .anecdote { background: linear-gradient(135deg, rgba(244,192,74,0.04), var(--bg-card)); border-color: rgba(244,192,74,0.25); }
+  .badge.rar-commune { background: rgba(95,208,127,0.14); color: var(--commune); border-color: rgba(95,208,127,0.4); }
+  .badge.rar-peu-commune { background: rgba(76,200,232,0.14); color: var(--peu-commune); border-color: rgba(76,200,232,0.4); }
+  .badge.rar-rare { background: rgba(240,138,74,0.14); color: var(--rare); border-color: rgba(240,138,74,0.4); }
+  .badge.rar-tres-rare { background: rgba(240,106,106,0.14); color: var(--tres-rare); border-color: rgba(240,106,106,0.4); }
+  .badge.rar-legendaire { background: rgba(244,192,74,0.16); color: var(--gold); border-color: rgba(244,192,74,0.5); }
 
   .detail-section {
     background: var(--bg-card); border: 1px solid #2e4d39;
@@ -521,8 +659,8 @@
 
 <header>
   <div class="brand" data-route="#/">
-    <span class="leaf">🌿</span>
-    <h1>Florescence</h1>
+    <span class="led" aria-hidden="true"></span>
+    <h1>FLORE<span class="glow">SCENCE</span></h1>
   </div>
   <span class="progress" id="progressBadge">— / 938</span>
   <button class="icon-btn" id="btnSettings" aria-label="Réglages">⚙</button>
@@ -562,7 +700,6 @@
       <div class="filter-row" id="filterRow">
         <button class="filter-pill active" data-filter="all">Tous</button>
         <button class="filter-pill" data-filter="unlocked">✓ Découverts</button>
-        <button class="filter-pill" data-filter="calanques">🌊 Calanques</button>
         <button class="filter-pill" data-filter="commune">🟢 Communs</button>
         <button class="filter-pill" data-filter="peu-commune">🔵 Peu communs</button>
         <button class="filter-pill" data-filter="rare">🟠 Rares</button>
@@ -850,6 +987,10 @@ async function loadData() {
       byGenus.get(g).push(sp);
     }
 
+    // Numérotation Pokédex stable : ordre alphabétique du nom latin
+    // (indépendant des futurs ré-tris d'affichage)
+    const sorted = [...genera.genera].sort((a, b) => a.genus.localeCompare(b.genus));
+    sorted.forEach((g, i) => { g.pokedexNumber = i + 1; });
     const byGenusIdx = new Map();
     for (const g of genera.genera) byGenusIdx.set(g.genus, g);
 
@@ -1002,19 +1143,149 @@ function renderGenusCard(g) {
   const isUnlocked = state.unlocked.has(g.genus);
   const isLeg = g.statutDominant === 'legendaire' || g.statutMin === 'legendaire';
   const isEnd = g.endemicCount > 0;
-  const dotColor = STATUT_COLORS[g.statutDominant];
+  const num = String(g.pokedexNumber || 0).padStart(3, '0');
+  const icon = getFamilyIcon(g);
+  const cls = [
+    'genus-card',
+    isUnlocked ? 'unlocked' : 'locked',
+    isLeg ? 'is-legendaire' : '',
+  ].filter(Boolean).join(' ');
+  // Affichage silhouette si non découvert : icône floutée + nom usuel toujours visible
+  // (on ne masque pas le nom — l'utilisateur veut savoir ce qu'il chasse)
   return `
-    <div class="genus-card ${isUnlocked ? 'unlocked' : ''}" data-genus="${escapeHtml(g.genus)}">
+    <div class="${cls}" data-genus="${escapeHtml(g.genus)}">
+      <div class="pokedex-num">N°${num}</div>
+      <div class="gn-icon">${icon}</div>
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
       <div class="gn-lat">${escapeHtml(g.genus)} · ${g.speciesCount} esp.</div>
       <div class="gn-meta">
-        <span class="gn-chip"><span class="gn-rarity-dot" style="background:${dotColor}"></span>${escapeHtml(STATUT_LABELS[g.statutDominant].replace(/^[^ ]+\s/, ''))}</span>
-        ${g.calanquesCount ? `<span class="gn-chip cal">🌊 ${g.calanquesCount}</span>` : ''}
-        ${isLeg ? `<span class="gn-chip leg">👑</span>` : ''}
+        <span class="gn-chip rar-${g.statutDominant}">${escapeHtml(STATUT_SHORT[g.statutDominant])}</span>
+        ${g.calanquesCount ? `<span class="gn-chip cal">🌊</span>` : ''}
         ${isEnd ? `<span class="gn-chip endemic">⭐</span>` : ''}
+        ${isLeg && g.statutDominant !== 'legendaire' ? `<span class="gn-chip rar-legendaire">👑</span>` : ''}
       </div>
     </div>
   `;
+}
+
+// Icône emoji par famille botanique — heuristique
+const FAMILY_ICONS = {
+  'Asteraceae': '🌼', 'Astéracées': '🌼',
+  'Rosaceae': '🌹', 'Rosacées': '🌹',
+  'Lamiaceae': '🌿', 'Lamiacées': '🌿',
+  'Fabaceae': '🌱', 'Fabacées': '🌱',
+  'Orchidaceae': '🌸', 'Orchidacées': '🌸',
+  'Brassicaceae': '🌻', 'Brassicacées': '🌻',
+  'Caryophyllaceae': '🌷', 'Caryophyllacées': '🌷',
+  'Apiaceae': '🌾', 'Apiacées': '🌾', 'Ombellifères': '🌾',
+  'Ranunculaceae': '🌼', 'Renonculacées': '🌼',
+  'Liliaceae': '🌷', 'Liliacées': '🌷',
+  'Iridaceae': '🌸', 'Iridacées': '🌸',
+  'Amaryllidaceae': '🌼', 'Amaryllidacées': '🌼',
+  'Asparagaceae': '🌿', 'Asparagacées': '🌿',
+  'Boraginaceae': '🌻', 'Boraginacées': '🌻',
+  'Cistaceae': '🌺', 'Cistacées': '🌺',
+  'Ericaceae': '🌸', 'Éricacées': '🌸',
+  'Plantaginaceae': '🌿', 'Plantaginacées': '🌿',
+  'Poaceae': '🌾', 'Poacées': '🌾', 'Graminées (poacées)': '🌾', 'Graminées': '🌾',
+  'Cyperaceae': '🌾', 'Cypéracées': '🌾',
+  'Juncaceae': '🌾', 'Juncacées': '🌾',
+  'Papaveraceae': '🌺', 'Papavéracées': '🌺',
+  'Caprifoliaceae': '🌸', 'Caprifoliacées': '🌸',
+  'Campanulaceae': '🌸', 'Campanulacées': '🌸',
+  'Geraniaceae': '🌷', 'Géraniacées': '🌷',
+  'Polygonaceae': '🌿', 'Polygonacées': '🌿',
+  'Chenopodiaceae': '🌿', 'Chénopodiacées': '🌿',
+  'Amaranthaceae': '🌿', 'Amaranthacées': '🌿',
+  'Solanaceae': '🌶', 'Solanacées': '🌶',
+  'Convolvulaceae': '🌸', 'Convolvulacées': '🌸',
+  'Euphorbiaceae': '🌿', 'Euphorbiacées': '🌿',
+  'Crassulaceae': '🌵', 'Crassulacées': '🌵',
+  'Cactaceae': '🌵', 'Cactacées': '🌵',
+  'Saxifragaceae': '🌿', 'Saxifragacées': '🌿',
+  'Violaceae': '🌷', 'Violacées': '🌷',
+  'Hypericaceae': '🌼', 'Hypericacées': '🌼',
+  'Pinaceae': '🌲', 'Pinacées': '🌲',
+  'Cupressaceae': '🌲', 'Cupressacées': '🌲',
+  'Fagaceae': '🌳', 'Fagacées': '🌳',
+  'Salicaceae': '🌳', 'Salicacées': '🌳',
+  'Betulaceae': '🌳', 'Bétulacées': '🌳',
+  'Oleaceae': '🌳', 'Oléacées': '🌳',
+  'Sapindaceae': '🍁', 'Sapindacées': '🍁',
+  'Aceraceae': '🍁', 'Acéracées': '🍁',
+  'Malvaceae': '🌺', 'Malvacées': '🌺',
+  'Primulaceae': '🌼', 'Primulacées': '🌼',
+  'Gentianaceae': '🌸', 'Gentianacées': '🌸',
+  'Equisetaceae': '🌿', 'Équisétacées': '🌿',
+  'Polypodiaceae': '🌿', 'Polypodiacées': '🌿',
+  'Aspleniaceae': '🌿', 'Aspléniacées': '🌿',
+  'Pteridaceae': '🌿', 'Ptéridacées': '🌿',
+};
+function getFamilyIcon(g) {
+  return FAMILY_ICONS[g.familleFr] || FAMILY_ICONS[g.family] || '🌿';
+}
+
+const STATUT_SHORT = {
+  'commune': 'commun', 'peu-commune': 'peu commun',
+  'rare': 'rare', 'tres-rare': 'très rare', 'legendaire': '👑 légendaire',
+};
+
+// Heuristique habitat/floraison par famille
+const FAMILY_HABITAT = {
+  'Cistacées': { hab: 'Garrigue, maquis méditerranéens', flor: 'Avril – juin' },
+  'Lamiacées': { hab: 'Garrigues, coteaux secs et caillouteux', flor: 'Mai – août' },
+  'Astéracées': { hab: 'Prairies, friches, bords de route', flor: 'Mai – septembre' },
+  'Fabacées': { hab: 'Prairies, garrigues, talus', flor: 'Avril – juillet' },
+  'Orchidacées': { hab: 'Pelouses sèches, sous-bois calcaires', flor: 'Avril – juin' },
+  'Rosacées': { hab: 'Lisières, haies, sous-bois clairs', flor: 'Avril – juin' },
+  'Apiacées': { hab: 'Prairies, talus, bords de chemin', flor: 'Mai – août' },
+  'Ombellifères': { hab: 'Prairies, talus, bords de chemin', flor: 'Mai – août' },
+  'Brassicacées': { hab: 'Friches, cultures, bords de route', flor: 'Mars – juin' },
+  'Renonculacées': { hab: 'Prairies humides, sous-bois frais', flor: 'Avril – juillet' },
+  'Caryophyllacées': { hab: 'Pelouses sèches, rocailles', flor: 'Mai – août' },
+  'Liliacées': { hab: 'Sous-bois, prairies de montagne', flor: 'Avril – juillet' },
+  'Iridacées': { hab: 'Pelouses sèches, prairies, marais', flor: 'Mars – juin' },
+  'Amaryllidacées': { hab: 'Prairies, sous-bois, dunes littorales', flor: 'Février – mai' },
+  'Boraginacées': { hab: 'Friches, garrigues, prairies sèches', flor: 'Avril – juillet' },
+  'Éricacées': { hab: 'Landes, sous-bois acidiphiles, montagnes', flor: 'Mai – août' },
+  'Papavéracées': { hab: 'Champs, friches, bords de route', flor: 'Avril – juillet' },
+  'Plantaginacées': { hab: 'Prairies, talus, lieux piétinés', flor: 'Avril – septembre' },
+  'Campanulacées': { hab: 'Prairies, rocailles, lisières', flor: 'Mai – août' },
+  'Caprifoliacées': { hab: 'Lisières, haies, talus', flor: 'Mai – août' },
+  'Géraniacées': { hab: 'Prairies, sous-bois, friches', flor: 'Avril – juillet' },
+  'Convolvulacées': { hab: 'Friches, cultures, talus', flor: 'Mai – septembre' },
+  'Euphorbiacées': { hab: 'Garrigues, friches, terrains secs', flor: 'Mars – juillet' },
+  'Crassulacées': { hab: 'Rocailles, vieux murs, toits', flor: 'Mai – août' },
+  'Saxifragacées': { hab: 'Rochers, éboulis montagnards', flor: 'Mai – août' },
+  'Violacées': { hab: 'Sous-bois, prairies, lisières', flor: 'Mars – mai' },
+  'Hypericacées': { hab: 'Prairies, friches, bords de chemin', flor: 'Juin – septembre' },
+  'Pinacées': { hab: 'Forêts, garrigues arborées', flor: 'Mars – mai' },
+  'Cupressacées': { hab: 'Forêts, maquis, garrigues arborées', flor: 'Février – avril' },
+  'Fagacées': { hab: 'Forêts, taillis, garrigues arborées', flor: 'Avril – mai' },
+  'Salicacées': { hab: 'Bords d\'eau, ripisylves', flor: 'Février – avril' },
+  'Bétulacées': { hab: 'Bois frais, bords d\'eau', flor: 'Mars – mai' },
+  'Oléacées': { hab: 'Garrigues, lisières, oliveraies', flor: 'Avril – juin' },
+  'Malvacées': { hab: 'Friches, bords de route, jardins', flor: 'Mai – septembre' },
+  'Primulacées': { hab: 'Prairies, sous-bois, montagnes', flor: 'Mars – juin' },
+  'Gentianacées': { hab: 'Pelouses montagnardes, alpages', flor: 'Mai – août' },
+  'Poacées': { hab: 'Prairies, garrigues, talus', flor: 'Avril – juillet' },
+  'Cypéracées': { hab: 'Marais, prairies humides, bords d\'eau', flor: 'Mai – août' },
+  'Asparagacées': { hab: 'Garrigues, sous-bois clairs', flor: 'Avril – juin' },
+};
+function getHabitatHint(g) {
+  return FAMILY_HABITAT[g.familleFr] || FAMILY_HABITAT[g.family] || { hab: 'Habitats variés en région PACA', flor: 'Variable selon les espèces' };
+}
+
+// Anecdote heuristique selon caractéristiques
+function getAnecdote(g) {
+  if (g.endemicCount > 0) return "Au moins une espèce de ce genre n'existe nulle part ailleurs sur Terre — un trésor PACA.";
+  if (g.statutMin === 'legendaire') return "Ce genre abrite une espèce considérée comme un emblème botanique français. Une rencontre rare et précieuse.";
+  if (g.calanquesCount === g.speciesCount && g.speciesCount > 1) return "Toutes les espèces de ce genre sont présentes dans le massif des Calanques — un genre profondément méditerranéen.";
+  if (g.calanquesCount > 0 && g.speciesCount === 1) return "L'unique espèce de ce genre en PACA fréquente le massif des Calanques.";
+  if (g.speciesCount > 30) return `Avec ${g.speciesCount} espèces différentes en PACA, c'est l'un des genres les plus diversifiés de la région — un défi pour les botanistes.`;
+  if (g.speciesCount === 1) return "Un genre représenté par une seule espèce dans la région — facile à identifier !";
+  if (g.statutDominant === 'commune') return "Un genre commun, facile à observer lors de tes balades.";
+  return null;
 }
 
 // ============================================================
@@ -1049,13 +1320,22 @@ function renderDetail(genus) {
     ? state.lastIdentified.speciesLatin
     : null;
 
+  const num = String(g.pokedexNumber || 0).padStart(3, '0');
+  const icon = getFamilyIcon(g);
+  const habitat = getHabitatHint(g);
+  const anecdote = getAnecdote(g);
+
   const html = `
-    <div class="detail-hero ${isUnlocked ? 'unlocked' : ''}">
+    <div class="detail-hero ${isUnlocked ? 'unlocked' : ''} ${isLeg ? 'is-legendaire' : ''}">
+      <div class="hero-num">N°${num} / 938</div>
+      <div class="hero-icon-wrap">
+        <div class="hero-icon">${icon}</div>
+      </div>
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
       <div class="gn-lat">${escapeHtml(g.genus)} · ${escapeHtml(g.familleFr || g.family || '')}</div>
-      <div class="badges">
-        <span class="badge statut">${STATUT_LABELS[g.statutDominant]}</span>
-        ${g.calanquesCount ? `<span class="badge calanques">🌊 ${g.calanquesCount} dans les Calanques</span>` : ''}
+      <div class="badges" style="justify-content:center;">
+        <span class="badge statut rar-${g.statutDominant}">${STATUT_LABELS[g.statutDominant]}</span>
+        ${g.calanquesCount ? `<span class="badge calanques">🌊 ${g.calanquesCount} esp. Calanques</span>` : ''}
         ${isLeg ? `<span class="badge legendaire">👑 légendaire</span>` : ''}
         ${isEnd ? `<span class="badge endemic">⭐ endémique</span>` : ''}
         ${isUnlocked ? `<span class="badge paca">✓ Découvert</span>` : ''}
@@ -1068,14 +1348,33 @@ function renderDetail(genus) {
     </div>
 
     <div class="detail-section">
-      <h3>À propos</h3>
-      <p style="margin:0; font-size:14px;">
-        ${getGenusDescription(g)}
-      </p>
+      <h3>📖 Description</h3>
+      <p style="margin:0; font-size:14px;">${getGenusDescription(g)}</p>
     </div>
 
     <div class="detail-section">
-      <h3>Espèces présentes en PACA (${speciesList.length})</h3>
+      <h3>🏞 Où & quand l'observer</h3>
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="info-label">Habitat typique</div>
+          <div class="info-value">${escapeHtml(habitat.hab)}</div>
+        </div>
+        <div class="info-cell">
+          <div class="info-label">Floraison</div>
+          <div class="info-value">${escapeHtml(habitat.flor)}</div>
+        </div>
+      </div>
+      <p class="small" style="margin:8px 0 0;">⚠️ Indication par famille botanique. Voir détail par espèce ci-dessous.</p>
+    </div>
+
+    ${anecdote ? `
+    <div class="detail-section anecdote">
+      <h3>✨ Le saviez-vous ?</h3>
+      <p style="margin:0; font-size:14px; font-style: italic;">${escapeHtml(anecdote)}</p>
+    </div>` : ''}
+
+    <div class="detail-section">
+      <h3>🌱 Espèces en PACA <span class="small">(${speciesList.length})</span></h3>
       <div class="species-list">
         ${speciesList.map(s => renderSpeciesRow(s, idLatin)).join('')}
       </div>

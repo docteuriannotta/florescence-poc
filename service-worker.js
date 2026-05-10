@@ -7,7 +7,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'florescence-v2-genus-2026-05-10-a';
+const CACHE_VERSION = 'florescence-v2-genus-2026-05-10-b';
 const PRECACHE_URLS = [
   './',
   './index.html',
