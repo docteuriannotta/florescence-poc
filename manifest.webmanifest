@@ -1,7 +1,7 @@
 {
-  "name": "Florescence — Pokédex floral PACA",
-  "short_name": "Florescence",
-  "description": "Pokédex floral PACA — identifie une fleur, débloque sa fiche genre. 938 genres, 3970 espèces, intégration Pl@ntNet.",
+  "name": "Floradex — Pokédex floral",
+  "short_name": "Floradex",
+  "description": "Pokédex floral — identifie une fleur, débloque sa fiche genre. 938 genres, 3970 espèces, intégration Pl@ntNet.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,4 +1,4 @@
-/* Florescence — Service Worker v2 (Session 3 — Pokédex par genre)
+/* Floradex — Service Worker v2 (Session 4 — Pokédex par genre, rebrand)
    Stratégie :
    - cache-first + revalidation silencieuse (stale-while-revalidate) sur le shell
    - paca-genera.json + paca-flora.json précachés
@@ -6,8 +6,10 @@
    - Au update : skipWaiting + clients.claim pour propagation immédiate
    - Au activate : cleanup automatique de TOUS les anciens caches
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
+   Rebrand S4 : Florescence → Floradex. Le nouveau CACHE_VERSION ('floradex-…')
+   force le cleanup des anciens caches 'florescence-v2-…' au prochain activate.
 */
-const CACHE_VERSION = 'florescence-v2-genus-2026-05-10-b';
+const CACHE_VERSION = 'floradex-v2-genus-2026-05-11-d';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -17,6 +19,7 @@ const PRECACHE_URLS = [
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png',
+  './floradex-logo.png',
 ];
 
 self.addEventListener('install', (event) => {

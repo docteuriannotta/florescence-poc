@@ -9,8 +9,8 @@
 <link rel="apple-touch-icon" href="icon-192.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Florescence" />
-<title>Florescence — Pokédex floral PACA</title>
+<meta name="apple-mobile-web-app-title" content="Floradex" />
+<title>Floradex — Pokédex floral</title>
 <style>
   :root {
     --bg: #0a1410;
@@ -66,17 +66,16 @@
     padding-top: max(10px, env(safe-area-inset-top));
     box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(95,208,127,0.18);
   }
-  header .brand { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; cursor: pointer; }
-  header .led {
-    width: 14px; height: 14px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #b6f0c8, var(--accent) 55%, var(--accent-dim) 100%);
-    box-shadow: 0 0 12px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25);
-    animation: pulse 2s ease-in-out infinite;
+  header .brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; cursor: pointer; }
+  header .brand-logo {
+    width: 32px; height: 32px; border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: brand-pulse 3s ease-in-out infinite;
   }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 8px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25); }
-    50% { box-shadow: 0 0 18px var(--accent), 0 0 26px var(--accent-glow), inset 0 -2px 4px rgba(0,0,0,0.25); }
+  @keyframes brand-pulse {
+    0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
+    50%      { box-shadow: 0 0 18px var(--accent-glow), 0 0 26px rgba(95,208,127,0.18); }
   }
   header .brand h1 {
     font-size: 16px; margin: 0; font-weight: 700;
@@ -119,7 +118,14 @@
   /* ============ HOME ============ */
   .home-hero {
     text-align: center;
-    padding: 30px 10px 24px;
+    padding: 24px 10px 20px;
+  }
+  .home-hero .home-logo {
+    display: block;
+    margin: 0 auto 18px;
+    width: 168px; height: 168px;
+    border-radius: 50%;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.35), 0 0 24px rgba(95,208,127,0.10);
   }
   .home-hero h2 {
     font-size: 24px; margin: 0 0 6px;
@@ -659,8 +665,8 @@
 
 <header>
   <div class="brand" data-route="#/">
-    <span class="led" aria-hidden="true"></span>
-    <h1>FLORE<span class="glow">SCENCE</span></h1>
+    <img class="brand-logo" src="icon-192.png" alt="Floradex" />
+    <h1>FLORA<span class="glow">DEX</span></h1>
   </div>
   <span class="progress" id="progressBadge">— / 938</span>
   <button class="icon-btn" id="btnSettings" aria-label="Réglages">⚙</button>
@@ -670,6 +676,7 @@
   <!-- ====================== HOME ====================== -->
   <section class="view" id="viewHome">
     <div class="home-hero">
+      <img class="home-logo" src="floradex-logo.png" alt="Floradex" />
       <h2>Identifie une fleur</h2>
       <p>Pointe ton appareil photo sur n'importe quelle fleur sauvage.</p>
       <button class="big-id-btn" id="btnHomeIdentify">
@@ -1912,7 +1919,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => $('btnShareDebug').textContent = '📤 Partager…', 1500); return;
     }
     if (navigator.share) {
-      try { await navigator.share({ title: 'Florescence — debug Pl@ntNet', text }); }
+      try { await navigator.share({ title: 'Floradex — debug Pl@ntNet', text }); }
       catch (e) {}
     } else { $('btnCopyDebug').click(); }
   });
@@ -1923,8 +1930,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // SW
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js').then((reg) => {
-      console.log('[Florescence] SW enregistré, scope =', reg.scope);
-    }).catch((err) => console.warn('[Florescence] SW non enregistré :', err));
+      console.log('[Floradex] SW enregistré, scope =', reg.scope);
+    }).catch((err) => console.warn('[Floradex] SW non enregistré :', err));
   }
 });
 </script>
