@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="S8.2 — Fix scroll lag (retrait blur GPU grid) + cleanup seuils badges + nomenclature 'badges'"
+DEFAULT_MSG="S8.4 — Fix scroll bloqué iOS : retrait overflow-x:hidden body + 812 will-change layers GPU"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 

@@ -46,8 +46,8 @@
     --leg: #b8902c;           /* doré sépia */
     --radius: 8px;            /* coins plus doux que S5 */
     --radius-lg: 12px;
-    /* S8 P0 : padding horizontal main adaptatif (10px sur très petit mobile → 16px sur tablette) */
-    --main-pad-x: clamp(10px, 3.5vw, 16px);
+    /* S8.3 : padding fixe (vw enlevé pour éviter recalc layout au scroll iOS) */
+    --main-pad-x: 12px;
     --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --font-serif: "Iowan Old Style", "Palatino", "Palatino Linotype", "Georgia", "Times New Roman", serif;
   }
@@ -61,9 +61,10 @@
     line-height: 1.4;
     min-height: 100vh;
     overscroll-behavior-y: contain;
-    /* S8 P0 patch : garde-fou anti-débordement horizontal sur la grille x5 mobile */
-    overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
+    /* S8.4 : overflow-x: hidden RETIRÉ — bloquait le scroll body-level sur iOS Safari.
+       Le min-width:0 sur les grid items + minmax(0,1fr) suffisent pour empêcher
+       tout débordement horizontal sans casser le scroll vertical. */
   }
   a { color: var(--accent); text-decoration: none; }
   a:active { opacity: 0.7; }
@@ -352,36 +353,42 @@
     display: grid;
     /* S6 patch : 5 cartes par ligne pour esprit Pokédex (décision user) */
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    /* S8 P0 : gap fluide adapté à la largeur écran (4px mobile → 6px tablette) */
-    gap: clamp(3px, 1.2vw, 6px);
+    /* S8.3 : valeurs FIXES (plus de vw) — vw provoque un recalc layout à chaque
+       scroll iOS Safari (URL bar qui change la viewport height) × 812 cards = lag mortel */
+    gap: 4px;
   }
   /* Cards plus denses pour tenir à 5 par ligne sur mobile */
   .genus-card {
-    /* S8 P0 : min-width: 0 indispensable pour empêcher tout débordement horizontal en grid */
     min-width: 0 !important;
-    padding: clamp(4px, 1.2vw, 8px) clamp(3px, 1.0vw, 6px) clamp(3px, 0.9vw, 5px) !important;
-    min-height: clamp(120px, 30vw, 165px) !important;
+    padding: 5px 4px 4px !important;
+    min-height: 130px !important;
   }
-  .genus-card .pokedex-num { font-size: clamp(8px, 2.2vw, 10px) !important; top: 4px !important; right: 5px !important; }
+  .genus-card .pokedex-num { font-size: 9px !important; top: 4px !important; right: 5px !important; }
   .genus-card .gn-fr {
-    font-size: clamp(9.5px, 2.8vw, 13px) !important;
+    font-size: 11px !important;
     line-height: 1.15 !important;
-    /* S8 P0 : casse les mots longs (latins) plutôt que déborder */
     overflow-wrap: anywhere;
     word-break: break-word;
   }
-  .genus-card .gn-lat { font-size: clamp(8px, 2.2vw, 10px) !important; overflow-wrap: anywhere; }
+  .genus-card .gn-lat { font-size: 9px !important; overflow-wrap: anywhere; }
   .genus-card .gn-chip {
-    font-size: clamp(7px, 1.9vw, 9px) !important;
-    padding: 1px clamp(2px, 0.8vw, 5px) !important;
-    /* S8 P0 : pas de wrap sur chip mais ellipsis si trop long */
+    font-size: 8px !important;
+    padding: 1px 4px !important;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  /* S8 P0 : meta wrap proprement, pas de débordement */
   .genus-card .gn-meta { min-width: 0; }
+  /* Tablette/desktop : on respire un peu plus, mais en media query (pas en vw) */
+  @media (min-width: 600px) {
+    .genus-grid { gap: 6px; }
+    .genus-card { padding: 8px 6px 6px !important; min-height: 165px !important; }
+    .genus-card .pokedex-num { font-size: 10px !important; }
+    .genus-card .gn-fr { font-size: 13px !important; }
+    .genus-card .gn-lat { font-size: 10px !important; }
+    .genus-card .gn-chip { font-size: 9px !important; padding: 1px 5px !important; }
+  }
   /* S6 patch : photo seule, plus d'emoji famille sur les cards */
   .genus-card .gn-icon { display: none !important; }
   /* Card style POKÉDEX */
@@ -396,11 +403,8 @@
     position: relative;
     box-shadow: 0 2px 8px var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.20);
     min-height: 165px;
-    /* S8 fix perf : skip render des cards hors écran (gain massif sur grille 812).
-       contain-intrinsic-size = taille estimée pour réserver l'espace scroll. */
-    content-visibility: auto;
-    contain-intrinsic-size: 165px;
-    contain: layout paint style;
+    /* S8.3 : retrait de content-visibility/contain (instable sur iOS Safari).
+       La perf passe désormais par la pagination JS (rendu progressif par chunks). */
   }
   .genus-card:active { transform: scale(0.97); }
   .genus-card .pokedex-num {
@@ -827,7 +831,7 @@
     flex: 1; min-width: 0;
     padding: 10px 2px;
     text-align: center; color: var(--fg-dim);
-    font-size: clamp(9.5px, 2.5vw, 11px);
+    font-size: 10px;
     text-decoration: none;
     display: flex; flex-direction: column; align-items: center; gap: 3px;
     overflow: hidden;
@@ -837,12 +841,17 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .nav-bar a.active { color: var(--accent); }
-  .nav-bar a .ico { font-size: clamp(18px, 5vw, 22px); line-height: 1; }
+  .nav-bar a .ico { font-size: 20px; line-height: 1; }
+  @media (min-width: 600px) {
+    .nav-bar a { font-size: 11px; }
+    .nav-bar a .ico { font-size: 22px; }
+  }
   main { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
 
   @media (min-width: 600px) {
     main { max-width: 720px; margin: 0 auto; }
     .nav-bar { max-width: 720px; left: 50%; transform: translateX(-50%); border-radius: 14px 14px 0 0; }
+    :root { --main-pad-x: 16px; }
   }
 
   /* ============ SESSION 5 — WIKIPEDIA ENRICHMENT ============ */
@@ -908,21 +917,30 @@
   .wiki-source a:active { opacity: 0.7; }
 
   /* Photo de fond sur cards Pokédex (genres découverts qui ont une photo en cache) */
-  /* S6 : photo désaturée+assombrie pour les locked, sharp+couleurs pour unlocked */
-  /* S8.2 fix scroll lag : retrait du filter:blur() GPU (trop coûteux × 812 cards).
-     On garde un fort assombrissement + désaturation = effet "non révélé" préservé,
-     mais le scroll devient fluide sur mobile. */
+  /* S8.3 : blur restauré, mais c'est la pagination JS (~120 cards rendues max)
+     qui rend ça supportable. Le coût GPU est désormais sur ~120 cards, pas 812. */
   .genus-card.locked.has-photo {
+    background-image: none;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--bg-card);
+  }
+  .genus-card.locked.has-photo::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
     background-image:
-      linear-gradient(180deg, rgba(61,43,31,0.55) 0%, rgba(61,43,31,0.80) 55%, rgba(61,43,31,0.96) 100%),
+      linear-gradient(180deg, rgba(61,43,31,0.32) 0%, rgba(61,43,31,0.68) 55%, rgba(61,43,31,0.94) 100%),
       var(--card-photo);
     background-size: cover;
     background-position: center;
-    background-color: var(--bg-card);
-    /* saturate 0 + brightness 0.55 : photo presque invisible, juste suggérée */
-    background-blend-mode: multiply;
+    filter: blur(3px) saturate(0.35) brightness(0.82);
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    /* PAS de will-change : créerait 812 layers GPU → saturation mémoire iOS */
   }
-  .genus-card.locked.has-photo .gn-icon { opacity: 0.5; }
+  .genus-card.locked.has-photo .gn-icon { filter: blur(2px) brightness(0.7); }
   .genus-card.has-photo {
     background-image: linear-gradient(180deg, rgba(10,20,16,0.15) 0%, rgba(10,20,16,0.55) 55%, rgba(10,20,16,0.92) 100%), var(--card-photo);
     background-size: cover;
