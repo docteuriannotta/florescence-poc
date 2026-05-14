@@ -217,9 +217,18 @@
 
   .genus-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-    gap: 12px;
+    /* S6 patch : 5 cartes par ligne pour esprit Pokédex (décision user) */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
   }
+  /* Cards plus denses pour tenir à 5 par ligne sur mobile */
+  .genus-card { padding: 6px 5px 5px !important; min-height: 130px !important; }
+  .genus-card .pokedex-num { font-size: 9px !important; top: 4px !important; right: 5px !important; }
+  .genus-card .gn-fr { font-size: 11px !important; line-height: 1.15 !important; }
+  .genus-card .gn-lat { font-size: 9px !important; }
+  .genus-card .gn-chip { font-size: 8px !important; padding: 1px 4px !important; }
+  /* S6 patch : photo seule, plus d'emoji famille sur les cards */
+  .genus-card .gn-icon { display: none !important; }
   /* Card style POKÉDEX */
   .genus-card {
     background: linear-gradient(160deg, var(--bg-card-2) 0%, var(--bg-card) 100%);
@@ -694,11 +703,18 @@
   .detail-hero .hero-photo.loaded { opacity: 1; }
   .detail-hero .hero-photo-skeleton {
     position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
     background: linear-gradient(110deg, var(--bg-card-2) 25%, var(--bg-card) 50%, var(--bg-card-2) 75%);
     background-size: 200% 100%;
     animation: skel-shimmer 1.4s linear infinite;
-    font-size: 44px; opacity: 0.55;
+    /* S6 patch : plus d'emoji visible dans le skeleton */
+    font-size: 0;
+  }
+  /* S6 patch : photo floutée+désaturée sur fiche détail si non débloquée */
+  .detail-hero.locked .hero-photo { filter: blur(8px) saturate(0.4) brightness(0.85); }
+  .detail-hero.locked .hero-photo-wrap::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(61,43,31,0.25);
+    pointer-events: none;
   }
   @keyframes skel-shimmer {
     0%   { background-position: 200% 0; }
@@ -1787,7 +1803,7 @@ function renderDetail(groupId) {
   }
 
   const html = `
-    <div class="detail-hero ${isUnlocked ? 'unlocked' : ''} ${isLeg ? 'is-legendaire' : ''}">
+    <div class="detail-hero ${isUnlocked ? 'unlocked' : 'locked'} ${isLeg ? 'is-legendaire' : ''}">
       <div class="hero-num">N°${num} / ${state.generaIndex.list.length}</div>
       ${heroVisual}
       <div class="gn-fr">${escapeHtml(title)}</div>
