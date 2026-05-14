@@ -1246,9 +1246,13 @@ async function loadData() {
     // Carte des aliases TaxRef (synonyme → nom accepté)
     const aliases = data.aliases || {};
 
+    // Photos iNaturalist pré-buildées (fallback 100% photos quand Wikipedia n'a rien)
+    const inatPhotos = new Map(Object.entries(data.inatPhotos || {}));
+
     state.flora = {
       byLatin, byId, byGenus,
       genusToGroup, aliases,
+      inatPhotos,
       total: data.totalSpecies,
       version: data.version,
     };
@@ -1466,9 +1470,11 @@ function setupCardObserver(grid) {
       const g = state.generaIndex.byGenus.get(genus);
       if (!g) return;
       const speciesType = getSpeciesTypeLatin(g);
-      getGenusInfo(genus, speciesType).then(info => {
+      // S6 : g.genus est un groupId (slug). Pour Wikipedia, on cherche
+      // sur le genus latin emblématique (generaPrincipal).
+      const lookupKey = g.generaPrincipal || g.genus;
+      getGenusInfo(lookupKey, speciesType).then(info => {
         state.wikiMem.set(genus, info || { empty: true });
-        // Si la card est toujours dans le DOM et qu'on a une photo, on met à jour son style
         if (info && info.thumbnail && document.body.contains(card)) {
           card.style.setProperty('--card-photo', `url('${info.thumbnail}')`);
           card.classList.add('has-photo');
@@ -1477,8 +1483,13 @@ function setupCardObserver(grid) {
     });
   }, { rootMargin: '200px 0px' });
 
-  // On observe uniquement les cards découvertes qui n'ont pas encore de photo affichée
-  grid.querySelectorAll('.genus-card.unlocked:not(.has-photo)').forEach(card => {
+  // S6 : on observe TOUTES les cards découvertes (même celles avec photo iNat).
+  // Le fetch Wikipedia upgradera la photo si une meilleure est trouvée.
+  // Le cache wikiMem évite les re-fetches inutiles.
+  grid.querySelectorAll('.genus-card.unlocked').forEach(card => {
+    const genus = card.dataset.genus;
+    // Skip si Wikipedia déjà tenté (cache hit ou empty)
+    if (genus && state.wikiMem.has(genus)) return;
     state.cardObserver.observe(card);
   });
 }
@@ -1490,12 +1501,15 @@ function renderGenusCard(g) {
   const num = String(g.pokedexNumber || 0).padStart(3, '0');
   const icon = getFamilyIcon(g);
 
-  // S5 : photo Wikipedia en background si genre découvert + photo en cache
+  // S6 : photo en background si genre découvert. Priorité Wikipedia (info
+  // contextuelle riche) puis iNaturalist (100% couverture pré-buildée).
   const wikiInfo = state.wikiMem.get(g.genus);
-  const hasPhoto = isUnlocked && wikiInfo && wikiInfo.thumbnail;
+  const inatPhoto = state.flora && state.flora.inatPhotos.get(g.genus);
+  const photoUrl = (wikiInfo && wikiInfo.thumbnail) || (inatPhoto && inatPhoto.url) || null;
+  const hasPhoto = isUnlocked && !!photoUrl;
   const justUnlocked = state.justUnlockedGenus === g.genus;
   const styleAttr = hasPhoto
-    ? ` style="--card-photo: url('${escapeHtml(wikiInfo.thumbnail)}')"`
+    ? ` style="--card-photo: url('${escapeHtml(photoUrl)}')"`
     : '';
   const cls = [
     'genus-card',
@@ -1683,8 +1697,10 @@ function renderDetail(groupId) {
   const habitat = getHabitatHint(g);
   const anecdote = getAnecdote(g);
 
-  // S5 : info Wikipedia (peuplée en RAM au boot depuis IDB, sinon undefined → on fetch)
+  // S6 : Wikipedia en priorité (article + photo contextuelle), iNaturalist en
+  // fallback (photo seule, garantie 100%).
   const wikiInfo = state.wikiMem.get(g.genus);
+  const inatPhoto = state.flora && state.flora.inatPhotos.get(g.genus);
   // États possibles : loading (undefined), failed (empty), text-only, photo
   const wikiState =
     wikiInfo === undefined ? 'loading' :
@@ -1692,7 +1708,7 @@ function renderDetail(groupId) {
     wikiInfo.thumbnail     ? 'photo'   :
     wikiInfo.extract       ? 'text-only' : 'failed';
 
-  // Hero visuel : photo Wikipedia OU skeleton OU emoji famille (fallback)
+  // Hero visuel : photo Wikipedia > photo iNaturalist > skeleton emoji famille
   let heroVisual;
   if (wikiState === 'photo') {
     heroVisual = `
@@ -1700,6 +1716,14 @@ function renderDetail(groupId) {
         <img class="hero-photo" data-hero-photo src="${escapeHtml(wikiInfo.thumbnail)}" alt="${escapeHtml(g.nomFrUsuel)}" />
         <div class="hero-photo-skeleton">${icon}</div>
         <div class="hero-photo-credit">📷 Wikipedia</div>
+      </div>`;
+  } else if (inatPhoto && inatPhoto.url) {
+    // S6 : fallback iNaturalist (pré-buildé côté pipeline → 100% couverture)
+    heroVisual = `
+      <div class="hero-photo-wrap">
+        <img class="hero-photo" data-hero-photo src="${escapeHtml(inatPhoto.url)}" alt="${escapeHtml(g.nomFrUsuel)}" />
+        <div class="hero-photo-skeleton">${icon}</div>
+        <div class="hero-photo-credit">📷 iNaturalist</div>
       </div>`;
   } else if (wikiState === 'loading') {
     heroVisual = `
@@ -1832,10 +1856,11 @@ function renderDetail(groupId) {
   // toujours sur cette même fiche (l'utilisateur peut avoir navigué entre-temps).
   if (wikiState === 'loading') {
     const speciesType = getSpeciesTypeLatin(g);
-    getGenusInfo(g.genus, speciesType).then(info => {
-      // Met à jour le miroir RAM (info peut être null = "tried & nothing found")
+    // S6 : g.genus est un groupId. Pour Wikipedia, on cherche sur le genus
+    // latin emblématique (generaPrincipal).
+    const lookupKey = g.generaPrincipal || g.genus;
+    getGenusInfo(lookupKey, speciesType).then(info => {
       state.wikiMem.set(g.genus, info || { empty: true });
-      // Re-render seulement si on est encore sur cette fiche
       const expected = '#/genre/' + encodeURIComponent(g.genus);
       if (location.hash === expected) {
         renderDetail(g.genus);
@@ -1849,11 +1874,15 @@ function renderSpeciesRow(s, identifiedLatin) {
   const flags = [];
   if (s.statut === 'legendaire') flags.push('👑');
   const fr = s.nomFr && s.nomFr !== '/' ? s.nomFr.split(',')[0] : '';
+  // S6 — kid-friendly : le nom latin n'apparaît qu'en mode avancé.
+  const latinLine = state.advancedMode
+    ? `<div class="sp-lat">${escapeHtml(s.nomLatin)}</div>`
+    : '';
   return `
     <div class="species-row ${isId ? 'identified' : ''}">
       <div style="flex:1; min-width:0;">
         <div class="sp-fr">${fr ? escapeHtml(fr) : '<span class="small">— pas de nom FR —</span>'} ${isId ? '<span style="color:var(--accent);font-weight:700;">  ← identifié !</span>' : ''}</div>
-        <div class="sp-lat">${escapeHtml(s.nomLatin)}</div>
+        ${latinLine}
       </div>
       <div class="sp-flags">${flags.join(' ')}</div>
     </div>
@@ -2222,7 +2251,7 @@ const WIKI_TTL_MS = 30 * 24 * 3600 * 1000;  // 30 jours
 // S5-fix : version du schéma de cache. À bumper dès qu'on change la logique
 // (ici : passage en filtre photo via media-list + correction URL). Les entrées
 // d'une version antérieure sont rejetées au read = re-fetch automatique.
-const WIKI_CACHE_VERSION = 2;
+const WIKI_CACHE_VERSION = 3;   // S6 : fix lookup (genus latin au lieu de groupId)
 
 let _db = null;
 function openDB() {

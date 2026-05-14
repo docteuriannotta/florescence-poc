@@ -9,7 +9,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches (y compris S5)
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-b';   // patch filtre fleurs étendu
+const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-d';   // + iNaturalist photos 100%
 const PRECACHE_URLS = [
   './',
   './index.html',
