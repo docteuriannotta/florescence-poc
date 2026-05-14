@@ -20,7 +20,7 @@ Application Pokédex floral kid-friendly. Identifie une fleur avec ton appareil 
 - `paca-flora.json` / `paca-genera.json` — conservés pour rétrocompatibilité offline (non utilisés par l'app S6, peuvent être supprimés en S7)
 - `manifest.webmanifest` — PWA installable
 - `service-worker.js` — **Service Worker v3** : stale-while-revalidate, auto-cleanup des anciens caches (S5 inclus)
-- `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` — icônes PWA (à régénérer en palette B en S7)
+- `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` — icônes PWA palette carnet naturaliste
 - `.nojekyll` — désactive Jekyll côté GitHub Pages
 
 ## Déploiement S6
@@ -31,7 +31,7 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
+Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-f'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
 
 ## Notes techniques S6
 
@@ -40,7 +40,8 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14'`) **invalid
 - **IndexedDB** : nom de la base inchangé (`florescence` v2), historique préservé.
 - **Seuil unlock** : `MIN_CONFIDENCE_TO_UNLOCK = 0.61` strict sur top 1 Pl@ntNet. Top 2/3 ≥ 61% n'unlock PAS (décision Q9). Boost +20% PACA supprimé.
 - **Mode avancé** : toggle dans Settings, dévoile famille botanique + liste des genres latins sur chaque fiche détaillée (décision Q7).
-- **À reporter en S7** : géolocalisation photo + endémicité régionale (Q6), table d'alias taxonomique enrichie depuis synonymes TaxRef (cas Centaurea cyanus → Cyanus segetum), affinage palette B (icônes installées, atténuation des box-shadows), filtre fréquence pour réduire des 1 729 cartes vers ~500 fleurs grand-public.
+- **À reporter en S7** : géolocalisation photo + endémicité régionale (Q6), table d'alias taxonomique enrichie depuis synonymes TaxRef (cas Centaurea cyanus → Cyanus segetum), atténuation des box-shadows, filtre fréquence pour réduire des 1 729 cartes vers ~500 fleurs grand-public.
+- **Patch Codex S7a** : icônes PWA + logo in-app régénérés en palette carnet naturaliste.
 
 ## Premier lancement sur le téléphone
 

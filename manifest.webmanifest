@@ -1,13 +1,13 @@
 {
   "name": "Floradex — Pokédex floral",
   "short_name": "Floradex",
-  "description": "Pokédex floral — identifie une fleur, débloque sa fiche genre. 938 genres, 3970 espèces, intégration Pl@ntNet.",
+  "description": "Pokédex floral — identifie une fleur, débloque sa fiche. 812 cartes, 6029 espèces, intégration Pl@ntNet.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0f1c14",
-  "theme_color": "#0f1c14",
+  "background_color": "#f0e3c9",
+  "theme_color": "#f0e3c9",
   "lang": "fr",
   "icons": [
     {

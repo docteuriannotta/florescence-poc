@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="Session 6 — Pivot national TaxRef + fusion vernaculaire (1729 cartes, 8670 espèces) + seuil Pl@ntNet 61% + refonte visuelle carnet naturaliste"
+DEFAULT_MSG="Codex S7a — Icônes PWA palette carnet naturaliste + polish visuel"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 
