@@ -971,6 +971,21 @@ const TIMEOUT_MS = 30000;
 const PACA_BOOST = 1.20;
 const TOTAL_GENERA = 938;
 
+// S5 — Liste des genres exclus du Pokédex (cultures agronomiques, plantes utilitaires
+// qui ne sont pas des "fleurs" au sens grand public). On les filtre au boot avant
+// la numérotation pour ne pas créer de trous.
+// Critère retenu : on exclut UNIQUEMENT les genres dont 100% des espèces sont des
+// cultures introduites. On garde ceux qui ont au moins une espèce sauvage en PACA
+// (ex: Solanum dulcamara, Brassica nigra, Allium roseum, Daucus carota…).
+const EXCLUDED_GENERA = new Set([
+  'Capsicum',    // piments
+  'Nicotiana',   // tabacs
+  'Cucumis',     // melons, concombres
+  'Cucurbita',   // courges, citrouilles
+  'Citrullus',   // pastèques
+  'Phaseolus',   // haricots
+]);
+
 const STATUT_LABELS = {
   'commune': '🟢 commune',
   'peu-commune': '🔵 peu commune',
@@ -1154,11 +1169,14 @@ async function loadData() {
     }
 
     // Numérotation Pokédex stable : ordre alphabétique du nom latin
-    // (indépendant des futurs ré-tris d'affichage)
-    const sorted = [...genera.genera].sort((a, b) => a.genus.localeCompare(b.genus));
+    // S5 : on filtre AVANT la numérotation pour éviter les trous dans la séquence.
+    const sorted = [...genera.genera]
+      .filter(g => !EXCLUDED_GENERA.has(g.genus))
+      .sort((a, b) => a.genus.localeCompare(b.genus));
     sorted.forEach((g, i) => { g.pokedexNumber = i + 1; });
     const byGenusIdx = new Map();
-    for (const g of genera.genera) byGenusIdx.set(g.genus, g);
+    for (const g of sorted) byGenusIdx.set(g.genus, g);
+    const excludedCount = genera.genera.length - sorted.length;
 
     state.flora = {
       byLatin, byGbifKey, byId, byGenus,
@@ -1168,10 +1186,11 @@ async function loadData() {
       version: flora.version,
     };
     state.generaIndex = {
-      list: genera.genera,
+      list: sorted,
       byGenus: byGenusIdx,
-      total: genera.totalGenera,
+      total: sorted.length,
       coverage: genera.frenchNamesCoverage,
+      excludedCount,
     };
 
     const ms = Math.round(performance.now() - t0);
@@ -1606,7 +1625,7 @@ function renderDetail(genus) {
   if (wikiState === 'photo') {
     heroVisual = `
       <div class="hero-photo-wrap">
-        <img class="hero-photo" src="${escapeHtml(wikiInfo.thumbnail)}" alt="${escapeHtml(g.nomFrUsuel)}" onload="this.classList.add('loaded'); this.parentNode.querySelector('.hero-photo-skeleton').classList.add('hidden');" onerror="this.style.display='none';" />
+        <img class="hero-photo" data-hero-photo src="${escapeHtml(wikiInfo.thumbnail)}" alt="${escapeHtml(g.nomFrUsuel)}" />
         <div class="hero-photo-skeleton">${icon}</div>
         <div class="hero-photo-credit">📷 Wikipedia</div>
       </div>`;
@@ -1635,7 +1654,7 @@ function renderDetail(genus) {
 
   const html = `
     <div class="detail-hero ${isUnlocked ? 'unlocked' : ''} ${isLeg ? 'is-legendaire' : ''}">
-      <div class="hero-num">N°${num} / 938</div>
+      <div class="hero-num">N°${num} / ${state.generaIndex.list.length}</div>
       ${heroVisual}
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
       <div class="gn-lat">${escapeHtml(g.genus)} · ${escapeHtml(g.familleFr || g.family || '')}</div>
@@ -1697,6 +1716,36 @@ function renderDetail(genus) {
   `;
   $('detailContent').innerHTML = html;
   $('btnDetailIdentify').addEventListener('click', () => setRoute('#/identify'));
+
+  // S5-fix : on attache les handlers load/error sur l'image hero APRÈS insertion DOM.
+  // Plus robuste que onload= inline qui peut rater si l'image est déjà en cache navigateur
+  // (l'event load tire avant que le handler soit attaché → image reste à opacity:0).
+  const heroImg = $('detailContent').querySelector('[data-hero-photo]');
+  if (heroImg) {
+    const onPhotoLoad = () => {
+      heroImg.classList.add('loaded');
+      const skel = heroImg.parentNode.querySelector('.hero-photo-skeleton');
+      if (skel) skel.classList.add('hidden');
+    };
+    const onPhotoError = () => {
+      // Image cassée : on cache l'img et on stoppe l'animation du skeleton pour
+      // que le user voie l'emoji famille en fond, pas un shimmer perpétuel.
+      heroImg.style.display = 'none';
+      const skel = heroImg.parentNode.querySelector('.hero-photo-skeleton');
+      if (skel) {
+        skel.style.animation = 'none';
+        skel.style.background = 'linear-gradient(135deg, var(--bg-deep), var(--bg-card-2))';
+      }
+    };
+    if (heroImg.complete) {
+      // L'image était déjà chargée avant qu'on attache les handlers (cache navigateur)
+      if (heroImg.naturalWidth > 0) onPhotoLoad();
+      else onPhotoError();
+    } else {
+      heroImg.addEventListener('load', onPhotoLoad, { once: true });
+      heroImg.addEventListener('error', onPhotoError, { once: true });
+    }
+  }
 
   // S5 : si on n'a pas encore tenté de fetcher Wikipedia pour ce genre, on le fait
   // en arrière-plan. Quand la donnée arrive, on re-render uniquement si on est
@@ -2085,6 +2134,10 @@ const DB_VER = 2;                     // S5 : bump v1 → v2 pour ajouter wikiCa
 const STORE_HIST = 'history';
 const STORE_WIKI = 'wikiCache';       // S5 : cache résumés + photos Wikipedia
 const WIKI_TTL_MS = 30 * 24 * 3600 * 1000;  // 30 jours
+// S5-fix : version du schéma de cache. À bumper dès qu'on change la logique
+// (ici : passage en filtre photo via media-list + correction URL). Les entrées
+// d'une version antérieure sont rejetées au read = re-fetch automatique.
+const WIKI_CACHE_VERSION = 2;
 
 let _db = null;
 function openDB() {
@@ -2153,6 +2206,8 @@ async function wikiCacheGet(genus) {
       req.onsuccess = () => {
         const v = req.result;
         if (!v) return resolve(null);
+        // S5-fix : on rejette les entrées d'une version de cache obsolète (force refetch)
+        if (v.version !== WIKI_CACHE_VERSION) return resolve(null);
         // TTL : si > 30 jours on considère "stale", on retourne null pour forcer refetch
         if (Date.now() - (v.fetchedAt || 0) > WIKI_TTL_MS) return resolve(null);
         resolve(v);
@@ -2167,7 +2222,12 @@ async function wikiCacheSet(genus, data) {
     const db = await openDB();
     return new Promise((resolve) => {
       const tx = db.transaction(STORE_WIKI, 'readwrite');
-      tx.objectStore(STORE_WIKI).put({ genus, ...data, fetchedAt: Date.now() });
+      tx.objectStore(STORE_WIKI).put({
+        genus,
+        ...data,
+        version: WIKI_CACHE_VERSION,
+        fetchedAt: Date.now(),
+      });
       tx.oncomplete = () => resolve();
       tx.onerror = () => resolve();
     });
@@ -2184,9 +2244,9 @@ async function wikiCacheGetAll() {
       req.onsuccess = () => {
         const map = new Map();
         for (const v of (req.result || [])) {
-          if (Date.now() - (v.fetchedAt || 0) <= WIKI_TTL_MS) {
-            map.set(v.genus, v);
-          }
+          if (v.version !== WIKI_CACHE_VERSION) continue;
+          if (Date.now() - (v.fetchedAt || 0) > WIKI_TTL_MS) continue;
+          map.set(v.genus, v);
         }
         resolve(map);
       };
@@ -2200,11 +2260,11 @@ async function wikiCacheGetAll() {
 // ============================================================
 
 const WIKI_FR_SUMMARY = 'https://fr.wikipedia.org/api/rest_v1/page/summary/';
+const WIKI_FR_MEDIA   = 'https://fr.wikipedia.org/api/rest_v1/page/media-list/';
 const WIKI_FR_PAGE    = 'https://fr.wikipedia.org/wiki/';
 const WIKIDATA_ENTITY = 'https://www.wikidata.org/wiki/Special:EntityData/';
 
 // File d'attente politesse : max 1 fetch Wikipedia toutes les ~1 s.
-// Évite de se faire rate-limiter et reste correct pour les serveurs.
 const WIKI_THROTTLE_MS = 1100;
 let _wikiQueueTail = Promise.resolve();
 let _wikiLastFetch = 0;
@@ -2220,29 +2280,68 @@ function wikiThrottle() {
   return p;
 }
 
-// Upgrade d'une thumbnail Wikipedia : passe de 320px à 640px quand l'URL Commons le permet.
-function upgradeThumb(url) {
-  if (!url) return url;
-  // URLs typiques : .../thumb/.../320px-Foo.jpg → on remplace par 640px
-  return url.replace(/\/(\d{2,4})px-/, (m, w) => {
-    const W = parseInt(w, 10);
-    if (W >= 480) return m; // déjà assez grand
-    return '/640px-';
-  });
+// S5-fix : mots-clés qui marquent une image comme illustration/gravure botanique
+// (à exclure pour ne garder que de vraies photographies).
+// Beaucoup de pages Wikipedia FR ont en image principale une gravure ancienne
+// (Köhler 1887, Sturm, Lindman, Thomé, Curtis…). On les filtre.
+const ILLUSTRATION_KEYWORDS = [
+  'köhler', 'kohler', 'medizinal-pflanzen', 'medicinal-plants', 'medicinal_plants',
+  'sturm', 'jacob_sturm', 'deutschlands_flora',
+  'lindman', 'bilder_ur_nordens_flora',
+  'thomé', 'thome', 'flore_complète',
+  'fitch', 'curtis', 'curtis_s_botanical', 'botanical_magazine',
+  'redouté', 'redoute', 'liliacées', 'les_roses',
+  'masclef', 'descriptions_des_plantes',
+  'flora_batava', 'icones_florae',
+  'illustration', 'drawing', 'sketch', 'engraving',
+  'dessin', 'gravure', 'lithograph', 'lithographie',
+  '_(plate_', 'fig._', 'planche_', 'plate_',
+  'atlas_des_pflanzenreichs', 'syme', 'sowerby', 'bentham',
+];
+
+function isLikelyPhoto(item) {
+  if (!item || item.type !== 'image') return false;
+  const t = (item.title || '').toLowerCase();
+  // .svg = vectoriel = quasi toujours un schéma ou un logo, pas une photo
+  if (t.endsWith('.svg')) return false;
+  for (const kw of ILLUSTRATION_KEYWORDS) {
+    if (t.includes(kw)) return false;
+  }
+  return true;
+}
+
+function pickBestPhoto(mediaList) {
+  const photos = (mediaList || []).filter(isLikelyPhoto);
+  if (!photos.length) return null;
+  const first = photos[0];
+  // srcset = [{src, scale}, …] — on prend la première version (1x, taille par défaut
+  // ~500px côté Wikipedia FR, suffisante pour un hero 4:3 sur mobile).
+  let src = (first.srcset && first.srcset[0] && first.srcset[0].src) || null;
+  if (!src) return null;
+  // URLs souvent protocol-relative (//upload.wikimedia.org/…) → on force https
+  if (src.startsWith('//')) src = 'https:' + src;
+  return src;
 }
 
 async function fetchWikiSummary(title) {
   await wikiThrottle();
   try {
     const url = WIKI_FR_SUMMARY + encodeURIComponent(title);
-    const resp = await fetch(url, {
-      headers: { 'Accept': 'application/json' }
-      // Note : User-Agent custom impossible depuis un navigateur (header bloqué par CORS),
-      // mais Wikipedia accepte les requêtes anonymes raisonnables sans souci.
-    });
+    const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
     if (!resp.ok) return null;
     return await resp.json();
   } catch(e) { return null; }
+}
+
+async function fetchMediaList(title) {
+  await wikiThrottle();
+  try {
+    const url = WIKI_FR_MEDIA + encodeURIComponent(title);
+    const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return data.items || [];
+  } catch(e) { return []; }
 }
 
 async function fetchWikidataImage(qid) {
@@ -2257,26 +2356,21 @@ async function fetchWikidataImage(qid) {
     if (!claims || !claims.length) return null;
     const filename = claims[0].mainsnak?.datavalue?.value;
     if (!filename) return null;
-    // Commons : construire l'URL Special:FilePath/{filename}?width=640
-    return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename) + '?width=640';
+    // Special:FilePath redirige vers une URL Commons valide à la bonne largeur.
+    return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename) + '?width=800';
   } catch(e) { return null; }
 }
 
-// Pipeline principal : essaye le genre, sinon l'espèce-type, sinon Wikidata pour la photo.
-// Retourne { extract, thumbnail, sourceUrl, sourceTitle } ou null.
+// Pipeline principal : extract via summary, PHOTO via media-list filtré (pas summary.thumbnail
+// car c'est souvent une gravure botanique ancienne — choix produit S5 : photo uniquement).
+// Retourne { extract, thumbnail, sourceUrl, sourceTitle } ou null si rien de présentable.
 async function getGenusInfoNetwork(genus, speciesTypeLatin) {
-  // 1. Essai direct sur le nom du genre
+  // 1. Texte : page du genre, fallback espèce-type
   let s = await fetchWikiSummary(genus);
-
-  // Wikipedia REST renvoie un type 'disambiguation' parfois — on ne le garde pas.
   if (s && s.type === 'disambiguation') s = null;
-  // Si la page existe mais n'a pas d'extract utile, on continue à creuser
-  if (s && (!s.extract || s.extract.length < 40) && speciesTypeLatin) {
-    s = null;
-  }
+  if (s && (!s.extract || s.extract.length < 40)) s = null;
 
   let usedTitle = genus;
-  // 2. Fallback : l'espèce-type (premier binôme du genre dans paca-flora)
   if (!s && speciesTypeLatin) {
     const s2 = await fetchWikiSummary(speciesTypeLatin);
     if (s2 && s2.type !== 'disambiguation' && s2.extract && s2.extract.length >= 40) {
@@ -2285,22 +2379,25 @@ async function getGenusInfoNetwork(genus, speciesTypeLatin) {
     }
   }
 
-  // Aucune page utile : on essaie quand même de récupérer une image via Wikidata
-  // si on a un Qid issu d'une page vide.
-  let thumbnail = s?.thumbnail?.source ? upgradeThumb(s.thumbnail.source) : null;
-  let extract = s?.extract || null;
-  let qid = s?.wikibase_item || null;
+  // 2. Photo : on cherche d'abord sur la page du genre (toutes les images, filtrées)
+  let photoUrl = pickBestPhoto(await fetchMediaList(genus));
 
-  // Fallback image : Wikidata P18 si pas de thumbnail
-  if (!thumbnail && qid) {
-    thumbnail = await fetchWikidataImage(qid);
+  // 3. Photo fallback : page de l'espèce-type
+  if (!photoUrl && speciesTypeLatin && speciesTypeLatin !== genus) {
+    photoUrl = pickBestPhoto(await fetchMediaList(speciesTypeLatin));
   }
 
-  if (!extract && !thumbnail) return null;
+  // 4. Photo fallback ultime : Wikidata P18 (si la page a un Qid)
+  if (!photoUrl && s && s.wikibase_item) {
+    photoUrl = await fetchWikidataImage(s.wikibase_item);
+  }
+
+  const extract = s ? s.extract : null;
+  if (!extract && !photoUrl) return null;
 
   return {
     extract,
-    thumbnail,
+    thumbnail: photoUrl,   // peut être null → l'UI retombera sur l'emoji famille
     sourceTitle: usedTitle,
     sourceUrl: WIKI_FR_PAGE + encodeURIComponent(usedTitle.replace(/ /g, '_')),
   };

@@ -116,7 +116,15 @@ Le Service Worker v2 (`CACHE_VERSION='florescence-v2-genus-2026-05-10-a'`) **inv
 - Clé API en `localStorage`. Doit être en `public` sur le compte Pl@ntNet (sinon CORS bloque).
 - Aucun backend, aucune télémétrie, zéro dépendance JS externe.
 
-## Nouveautés Session 5 (v2.2-e — 11 mai 2026)
+## Nouveautés Session 5 — patch v2.2-g (11 mai 2026, soir)
+
+- 🐛 **Fix bug photo** : les images Wikipedia ne s'affichaient pas (URLs en `640px-` retournaient des 400). Cause : `upgradeThumb` produisait des largeurs non supportées par Wikipedia. Solution : on utilise désormais les URLs natives renvoyées par l'API (générées par Wikipedia, garanties valides). Les handlers `load/error` sont aussi passés en JS post-insertion plutôt que `onload=` inline (plus robuste face aux images déjà cachées navigateur).
+- 📸 **Photos uniquement, plus de gravures** : nouveau pipeline via `/api/rest_v1/page/media-list/{title}` qui récupère toutes les images de la page Wikipedia, puis filtrage par mots-clés (Köhler, Sturm, Lindman, Thomé, Curtis, illustration, gravure, planche, .svg, etc.). Beaucoup de pages flore Wikipedia FR ont en image principale une gravure botanique du XIXᵉ (Köhler 1887, Sturm…) — on les écarte. Fallback : si aucune photo après filtre, on retombe sur l'espèce-type, puis Wikidata P18, puis l'emoji famille.
+- 🚫 **Exclusion genres non-fleurs** : 6 genres retirés du Pokédex (cultures agronomiques, plantes utilitaires) — Capsicum (piments), Nicotiana (tabacs), Cucumis (concombres/melons), Cucurbita (courges), Citrullus (pastèques), Phaseolus (haricots). Total Pokédex : **932 genres** (vs 938). Renumérotation alphabétique préservée, pas de trous. Critère : on garde tous les genres ayant au moins une espèce sauvage en PACA (Solanum, Allium, Daucus, Brassica…).
+- 🎨 **Logo** : icônes installées (écran d'accueil iOS/Android) avec fond **blanc opaque** + mot FLORADEX. `floradex-logo.png` (hero in-app) en **fond transparent** pour se fondre dans le bg sombre de l'app.
+- 🔄 **Cache Wikipedia invalidé** : `WIKI_CACHE_VERSION` bumpé à 2 → toutes les anciennes entrées du store `wikiCache` (URLs cassées, gravures Köhler) sont rejetées au read et re-fetchées avec le nouveau pipeline.
+
+## Nouveautés Session 5 — initial v2.2-e (11 mai 2026, matin)
 
 - 📖 **Fiches enrichies Wikipedia** : photo de hero + description encyclopédique récupérées via Wikipedia FR REST. Fallback sur l'espèce-type si la page du genre n'existe pas, puis Wikidata P18 pour la photo en dernier recours. Fallback ultime sur l'heuristique S3 (jamais d'écran blanc).
 - 🖼 **Photo Wikipedia sur les cards du Pokédex** : les genres découverts arborent leur photo en fond de carte (chargement lazy via IntersectionObserver, throttle 1 req/s pour rester poli avec Wikipedia).
@@ -132,7 +140,8 @@ Le Service Worker v2 (`CACHE_VERSION='florescence-v2-genus-2026-05-10-a'`) **inv
 
 ## Versions
 
-- v2.2-e — 11 mai 2026 — Session 5 (fiches Wikipedia enrichies, anim déblocage, filtre famille)
+- v2.2-g — 11 mai 2026 (soir) — Patch Session 5 (fix bug photo, filtre photos vs gravures, exclusion 6 genres non-fleurs, logo fond blanc + transparent)
+- v2.2-e — 11 mai 2026 (matin) — Session 5 (fiches Wikipedia enrichies, anim déblocage, filtre famille)
 - v2.2-d — 11 mai 2026 — Session 4 (logo Canva + rebrand)
 - v2.0 — 10 mai 2026 — Session 3 (Pokédex par genre, 938 fiches)
 - v1.0 — 9 mai 2026 — Session 2 (POC Pl@ntNet)

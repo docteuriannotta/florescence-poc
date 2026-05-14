@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="Session 5 — Fiches Wikipedia enrichies (photo + description, anim déblocage, filtre famille)"
+DEFAULT_MSG="Patch S5 — Fix photos Wikipedia (URLs cassées + filtre gravures), exclusion 6 genres non-fleurs, logo fond blanc"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 

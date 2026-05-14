@@ -9,7 +9,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v2-genus-2026-05-11-e';
+const CACHE_VERSION = 'floradex-v2-genus-2026-05-11-g';
 const PRECACHE_URLS = [
   './',
   './index.html',
