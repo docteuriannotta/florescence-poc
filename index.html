@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0f1c14" />
+<meta name="theme-color" content="#f0e3c9" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
 <link rel="apple-touch-icon" href="icon-192.png" />
@@ -13,34 +13,37 @@
 <title>Floradex — Pokédex floral</title>
 <style>
   :root {
-    --bg: #0a1410;
-    --bg-elev: #122119;
-    --bg-card: #1a2e22;
-    --bg-card-2: #213a2c;
-    --bg-deep: #050b07;
-    --fg: #eef7f0;
-    --fg-dim: #9bb4a3;
-    --fg-faint: #6b8775;
-    --accent: #5fd07f;
-    --accent-dim: #3a9a55;
-    --accent-bright: #8ee6a4;
-    --accent-glow: rgba(95,208,127,0.22);
-    --gold: #f4c04a;
-    --gold-dim: #c89a2e;
-    --warn: #e0b94a;
-    --err: #e36a6a;
-    --paca: #5fd07f;
-    --calanques: #4cc8e8;
-    --legendaire: #f4c04a;
-    --hors: #b07fd0;
-    --commune: #5fd07f;
-    --peu-commune: #4cc8e8;
-    --rare: #f08a4a;
-    --tres-rare: #f06a6a;
-    --leg: #f4c04a;
-    --radius: 14px;
-    --radius-lg: 18px;
+    /* S6 — Direction artistique B : Carnet naturaliste
+       Palette : kraft beige / encre brune / vert d'eau / doré sépia */
+    --bg: #f0e3c9;            /* kraft */
+    --bg-elev: #ece0c4;       /* kraft légèrement plus foncé */
+    --bg-card: #f6ecd6;       /* ivoire (papier vergé) */
+    --bg-card-2: #fbf3df;     /* ivoire très clair */
+    --bg-deep: #d8c6a0;       /* kraft foncé, séparateurs */
+    --fg: #3d2b1f;            /* encre brune (texte principal) */
+    --fg-dim: #6e5840;        /* encre brune diluée */
+    --fg-faint: #9d8a6e;      /* encre brune très diluée */
+    --accent: #4a7c5e;        /* vert d'eau (herbier) */
+    --accent-dim: #355e44;
+    --accent-bright: #6da685;
+    --accent-glow: rgba(74,124,94,0.18);
+    --gold: #b8902c;          /* doré sépia */
+    --gold-dim: #8b6c1f;
+    --warn: #c97a2a;          /* ocre brûlé */
+    --err: #a83434;           /* rouge brique */
+    --paca: #4a7c5e;          /* conservé pour rétrocompat, valeur = accent */
+    --calanques: #4a7c5e;     /* idem, classes orphelines */
+    --legendaire: #b8902c;
+    --hors: #6e5840;
+    --commune: #4a7c5e;       /* vert d'eau */
+    --peu-commune: #5a82a5;   /* bleu pâle aquarelle */
+    --rare: #b8702a;          /* ocre */
+    --tres-rare: #a83434;     /* rouge brique */
+    --leg: #b8902c;           /* doré sépia */
+    --radius: 8px;            /* coins plus doux que S5 */
+    --radius-lg: 12px;
     --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --font-serif: "Iowan Old Style", "Palatino", "Palatino Linotype", "Georgia", "Times New Roman", serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -56,34 +59,30 @@
   a { color: var(--accent); text-decoration: none; }
   a:active { opacity: 0.7; }
 
-  /* ============ HEADER POKEDEX ============ */
+  /* ============ HEADER POKEDEX (S6 — Carnet naturaliste) ============ */
   header {
     padding: 10px 14px;
-    background: linear-gradient(180deg, #122119 0%, #0a1410 100%);
-    border-bottom: 2px solid var(--accent-dim);
+    background: var(--bg-elev);
+    border-bottom: 1px solid var(--bg-deep);
     display: flex; justify-content: space-between; align-items: center; gap: 10px;
     position: sticky; top: 0; z-index: 10;
     padding-top: max(10px, env(safe-area-inset-top));
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(95,208,127,0.18);
+    box-shadow: 0 2px 6px rgba(61,43,31,0.08);
   }
   header .brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; cursor: pointer; }
   header .brand-logo {
     width: 32px; height: 32px; border-radius: 50%;
     flex-shrink: 0;
-    box-shadow: 0 0 12px var(--accent-glow);
-    animation: brand-pulse 3s ease-in-out infinite;
-  }
-  @keyframes brand-pulse {
-    0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
-    50%      { box-shadow: 0 0 18px var(--accent-glow), 0 0 26px rgba(95,208,127,0.18); }
+    box-shadow: 0 0 6px var(--accent-glow);
   }
   header .brand h1 {
-    font-size: 16px; margin: 0; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase;
+    font-family: var(--font-serif);
+    font-size: 18px; margin: 0; font-weight: 600;
+    letter-spacing: 0.5px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     color: var(--fg);
   }
-  header .brand h1 .glow { color: var(--accent-bright); text-shadow: 0 0 8px var(--accent-glow); }
+  header .brand h1 .glow { color: var(--accent); }
   header .progress {
     font-size: 11px; color: var(--fg-dim);
     background: var(--bg-deep);
@@ -281,15 +280,17 @@
     font-style: normal;
   }
   .genus-card .gn-fr {
-    font-weight: 600; font-size: 13.5px;
-    line-height: 1.25;
+    font-family: var(--font-serif);
+    font-weight: 600; font-size: 15px;
+    line-height: 1.2;
     color: var(--fg);
     margin-top: auto;
     overflow: hidden; display: -webkit-box;
     -webkit-line-clamp: 2; -webkit-box-orient: vertical;
   }
   .genus-card .gn-lat {
-    font-style: italic; font-size: 10.5px; color: var(--fg-faint);
+    font-family: var(--font-serif);
+    font-style: italic; font-size: 11px; color: var(--fg-dim);
     margin-top: 2px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
@@ -375,12 +376,15 @@
   }
   .detail-hero .hero-icon { font-size: 56px; line-height: 1; }
   .detail-hero .gn-fr {
-    font-size: 24px; font-weight: 700;
+    font-family: var(--font-serif);
+    font-size: 26px; font-weight: 600;
     margin: 0 0 4px;
     position: relative;
+    letter-spacing: 0.2px;
   }
   .detail-hero .gn-lat {
-    font-style: italic; color: var(--fg-dim); font-size: 13px;
+    font-family: var(--font-serif);
+    font-style: italic; color: var(--fg-dim); font-size: 14px;
     margin-bottom: 12px;
     position: relative;
   }
@@ -434,7 +438,8 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .species-row .sp-lat {
-    font-style: italic; color: var(--fg-dim); font-size: 12px;
+    font-family: var(--font-serif);
+    font-style: italic; color: var(--fg-dim); font-size: 13px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .species-row .sp-flags { display: flex; gap: 4px; flex-shrink: 0; font-size: 12px; }
@@ -824,21 +829,15 @@
         <button class="filter-pill" data-filter="rare">🟠 Rares</button>
         <button class="filter-pill" data-filter="tres-rare">🔴 Très rares</button>
         <button class="filter-pill" data-filter="legendaire">👑 Légendaires</button>
-        <button class="filter-pill" data-filter="endemic">⭐ Endémiques</button>
       </div>
-      <div class="family-filter-row">
-        <label for="familySelect">Famille</label>
-        <select id="familySelect" class="family-select">
-          <option value="">Toutes les familles</option>
-        </select>
-      </div>
+      <!-- S6 : filtre famille retiré par défaut (Q7) — déplacé en mode avancé sur fiche -->
     </div>
 
     <div class="results-info" id="resultsInfo">— résultats</div>
     <div class="genus-grid" id="genusGrid"></div>
     <div class="empty-state" id="emptyState" style="display:none;">
       <div style="font-size:48px;margin-bottom:8px;">🌾</div>
-      <div>Aucun genre ne correspond à ces filtres.</div>
+      <div>Aucune fleur ne correspond à ces filtres.</div>
     </div>
   </section>
 
@@ -924,24 +923,24 @@
     <div class="field">
       <label for="project">Projet (référentiel)</label>
       <select id="project">
-        <option value="weurope">Western Europe (recommandé pour PACA)</option>
+        <option value="weurope">Western Europe (recommandé pour la France)</option>
         <option value="k-world-flora">World Flora</option>
         <option value="useful">Useful plants</option>
         <option value="the-plant-list">The Plant List</option>
       </select>
     </div>
     <div class="field">
-      <div class="toggle-row" id="boostRow">
+      <div class="toggle-row" id="advancedRow">
         <div>
-          <div class="label">Boost +20% PACA</div>
-          <div class="sub">Améliore le ranking des espèces locales. Désactive pour comparer la précision brute.</div>
+          <div class="label">Mode avancé (botanique)</div>
+          <div class="sub">Dévoile la famille botanique et la liste des genres latins sur chaque fiche.</div>
         </div>
-        <div class="toggle-switch" id="boostToggle"></div>
+        <div class="toggle-switch" id="advancedToggle"></div>
       </div>
     </div>
     <div class="field">
       <button class="btn ghost" id="btnResetProgress">🗑 Réinitialiser ma progression Pokédex</button>
-      <div class="help">Efface uniquement les genres marqués comme découverts. Ne touche pas à l'historique des identifications.</div>
+      <div class="help">Efface uniquement les cartes marquées comme découvertes. Ne touche pas à l'historique des identifications.</div>
     </div>
     <div class="actions" style="margin-top:8px;">
       <button class="btn" id="btnCloseSettings">OK</button>
@@ -956,35 +955,29 @@
 // ============================================================
 // CONFIG & ÉTAT
 // ============================================================
-const STORE_KEY_API = 'florescence.plantnet.apiKey';
-const STORE_KEY_PROJECT = 'florescence.plantnet.project';
-const STORE_KEY_BOOST = 'florescence.plantnet.boost';
-const STORE_KEY_UNLOCKED = 'florescence.unlocked.genera';
+// S6 — Pivot national + paradigme vernaculaire :
+//   * 1 card = 1 nomFrUsuel (groupe vernaculaire), plus 1 genre botanique
+//   * Données : floradex-data.json (TaxRef France filtré "fleurs sauvages")
+//   * Reset progression S5 au premier boot v6 (décision Q5)
+//   * Seuil Pl@ntNet ≥ 0.61 strict pour déblocage (décision Q9)
+//   * Boost PACA supprimé (plus de scope régional)
+const STORE_KEY_API           = 'florescence.plantnet.apiKey';
+const STORE_KEY_PROJECT       = 'florescence.plantnet.project';
+const STORE_KEY_UNLOCKED      = 'florescence.unlocked.groups';   // S6 (groupId)
+const STORE_KEY_UNLOCKED_S5   = 'florescence.unlocked.genera';   // S5 (vidée au boot v6)
+const STORE_KEY_DEX_VERSION   = 'florescence.dexVersion';
+const STORE_KEY_ONBOARDED_S6  = 'florescence.onboardedS6';
+const STORE_KEY_ADVANCED      = 'florescence.advancedMode';
 
-const FLORA_URL = './paca-flora.json';
-const GENERA_URL = './paca-genera.json';
-const PLANTNET_BASE = 'https://my-api.plantnet.org/v2/identify';
-const MAX_DIM = 1200;
-const JPEG_QUALITY = 0.85;
-const MAX_PHOTOS = 5;
-const TIMEOUT_MS = 30000;
-const PACA_BOOST = 1.20;
-const TOTAL_GENERA = 938;
-
-// S5 — Liste des genres exclus du Pokédex (cultures agronomiques, plantes utilitaires
-// qui ne sont pas des "fleurs" au sens grand public). On les filtre au boot avant
-// la numérotation pour ne pas créer de trous.
-// Critère retenu : on exclut UNIQUEMENT les genres dont 100% des espèces sont des
-// cultures introduites. On garde ceux qui ont au moins une espèce sauvage en PACA
-// (ex: Solanum dulcamara, Brassica nigra, Allium roseum, Daucus carota…).
-const EXCLUDED_GENERA = new Set([
-  'Capsicum',    // piments
-  'Nicotiana',   // tabacs
-  'Cucumis',     // melons, concombres
-  'Cucurbita',   // courges, citrouilles
-  'Citrullus',   // pastèques
-  'Phaseolus',   // haricots
-]);
+const DATA_URL                = './floradex-data.json';
+const PLANTNET_BASE           = 'https://my-api.plantnet.org/v2/identify';
+const MAX_DIM                 = 1200;
+const JPEG_QUALITY            = 0.85;
+const MAX_PHOTOS              = 5;
+const TIMEOUT_MS              = 30000;
+const MIN_CONFIDENCE_TO_UNLOCK = 0.61;   // S6 Q9 : seuil strict top 1
+const DEX_VERSION_S6          = 6;
+const TOTAL_GROUPS_FALLBACK   = 1729;    // valeur indicative, sera écrasée par data.totalGroups
 
 const STATUT_LABELS = {
   'commune': '🟢 commune',
@@ -1002,23 +995,27 @@ const STATUT_COLORS = {
 };
 
 const state = {
-  flora: null,         // { byLatin, byGbifKey, byId, byGenus, aliases, total }
-  generaIndex: null,   // { list, byGenus }
-  unlocked: new Set(), // genus names découverts
+  // S6 — état du Pokédex vernaculaire :
+  //   * state.unlocked contient des groupId (slug du nomFrUsuel, ex "lavandes")
+  //   * state.generaIndex.byGenus indexe par groupId (le nom est conservé pour
+  //     limiter l'impact dans les renders, mais sémantiquement c'est byGroupId)
+  //   * state.flora.genusToGroup mappe genus latin → groupId (utilisé pour
+  //     matcher les résultats Pl@ntNet qui renvoient des genus latins)
+  flora: null,         // { byLatin, byId, byGenus, genusToGroup, aliases, total }
+  generaIndex: null,   // { list, byGenus (sémantiquement byGroupId), total }
+  unlocked: new Set(), // groupId débloqués (slugs)
   apiKey: '',
   project: 'weurope',
-  boost: false,        // OFF par défaut (S3 décision produit)
   busy: false,
   photos: [],
   filter: 'all',
   search: '',
-  lastIdentified: null, // { genus, speciesLatin } pour highlight
-  // S5 ajouts :
-  wikiMem: new Map(),         // genus → { extract, thumbnail, sourceUrl, sourceTitle, empty? } (miroir IDB en RAM)
-  familyFilter: '',           // valeur du dropdown famille (vide = toutes)
-  familyTop15: [],            // [{ family, count }] calculé au boot
-  justUnlockedGenus: null,    // genus à animer au prochain render pokédex
-  cardObserver: null,         // IntersectionObserver pour lazy-fetch photos cards
+  lastIdentified: null,       // { groupId, speciesLatin } pour highlight
+  wikiMem: new Map(),         // groupId → { extract, thumbnail, sourceUrl, sourceTitle, empty? }
+  familyTop15: [],            // [{ family, count }] calculé au boot (mode avancé)
+  justUnlockedGenus: null,    // groupId à animer au prochain render (nom historique S5)
+  cardObserver: null,
+  advancedMode: false,        // S6 Q7 — révèle famille/genres techniques sur fiche
 };
 
 // ============================================================
@@ -1062,37 +1059,83 @@ function fuzzyMatch(needle, haystack) {
 // STORAGE / UNLOCKED
 // ============================================================
 
-// S5 — P4 : migration douce localStorage florescence.* → floradex.*
-// Stratégie conservative : on COPIE les clés vers leur équivalent floradex.* mais
-// on continue à lire/écrire les clés florescence.* comme canonique (cf. handoff #5
-// "NE PAS renommer pour ne pas casser les data users"). Cette shadow copy prépare
-// une future bascule en S6+ sans risque côté users actuels.
+// S6 — Migration progressive S5 → S6
+// Décision Q5 : reset complet de la progression utilisateur. On vide
+// la clé 'florescence.unlocked.genera' (S5) au premier boot v6 et on
+// présente un écran d'onboarding "Floradex passe au national".
 function migrateStorageKeysIfNeeded() {
-  const pairs = [
-    [STORE_KEY_API,      'floradex.plantnet.apiKey'],
-    [STORE_KEY_PROJECT,  'floradex.plantnet.project'],
-    [STORE_KEY_BOOST,    'floradex.plantnet.boost'],
-    [STORE_KEY_UNLOCKED, 'floradex.unlocked.genera'],
-  ];
   try {
-    for (const [oldK, newK] of pairs) {
-      const oldV = localStorage.getItem(oldK);
-      const newV = localStorage.getItem(newK);
-      // Recopie ancien → nouveau si absent côté nouveau
-      if (oldV !== null && newV === null) localStorage.setItem(newK, oldV);
+    const dexV = parseInt(localStorage.getItem(STORE_KEY_DEX_VERSION) || '0', 10);
+    if (dexV < DEX_VERSION_S6) {
+      // Premier boot S6 : on archive l'ancien set unlocked (pour debug si besoin)
+      // sous une clé .legacy.s5 puis on le supprime de la clé canonique S5.
+      const oldS5 = localStorage.getItem(STORE_KEY_UNLOCKED_S5);
+      if (oldS5) {
+        try { localStorage.setItem('florescence.legacy.s5.unlocked', oldS5); } catch(_){}
+        localStorage.removeItem(STORE_KEY_UNLOCKED_S5);
+      }
+      // On vide aussi les anciennes clés floradex.* (shadow copies S5)
+      try { localStorage.removeItem('floradex.unlocked.genera'); } catch(_){}
+      try { localStorage.removeItem('floradex.plantnet.boost'); } catch(_){}
+      // On vide la nouvelle clé groups au cas où elle traînerait depuis un essai
+      localStorage.removeItem(STORE_KEY_UNLOCKED);
+      // Bump version
+      localStorage.setItem(STORE_KEY_DEX_VERSION, String(DEX_VERSION_S6));
     }
-  } catch(e) { /* localStorage indispo (mode privé, quota) : tant pis, on continue */ }
+  } catch(e) { /* localStorage indispo (mode privé) : on continue */ }
+}
+
+function shouldShowOnboardingS6() {
+  try {
+    return localStorage.getItem(STORE_KEY_ONBOARDED_S6) !== '1';
+  } catch(e) { return false; }
+}
+function markOnboardingDone() {
+  try { localStorage.setItem(STORE_KEY_ONBOARDED_S6, '1'); } catch(_){}
+}
+
+// S6 — Onboarding au premier lancement v6 (décision Q5 : reset progression).
+// Affiche une bannière modale courte expliquant le pivot national + reset.
+function showOnboardingS6() {
+  if (!shouldShowOnboardingS6()) return;
+  // Si la modale n'existe pas dans le DOM, on l'injecte à la volée.
+  let modal = document.getElementById('onboardModalS6');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'onboardModalS6';
+    modal.className = 'modal open';
+    modal.innerHTML = `
+      <div class="modal-card" style="max-width:380px; text-align:center;">
+        <div style="font-size:48px;">🌍</div>
+        <h2 style="margin:8px 0;">Floradex passe au national</h2>
+        <p style="font-size:14px; line-height:1.5;">
+          Cette nouvelle version couvre <strong>toute la France métropolitaine</strong>
+          (plus seulement PACA) et regroupe les fleurs par <strong>nom usuel</strong>
+          plutôt que par genre botanique.<br><br>
+          Conséquence : <em>ton ancien Pokédex a été remis à zéro</em> pour repartir
+          sur de bonnes bases. Désolé pour la perte, bonne chasse !
+        </p>
+        <button class="btn" id="btnCloseOnboardS6" style="margin-top:14px;">OK, c'est parti 🌼</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const btn = document.getElementById('btnCloseOnboardS6');
+    if (btn) btn.addEventListener('click', () => {
+      markOnboardingDone();
+      modal.remove();
+    });
+  }
 }
 
 function loadSettings() {
   migrateStorageKeysIfNeeded();
   state.apiKey = localStorage.getItem(STORE_KEY_API) || '';
   state.project = localStorage.getItem(STORE_KEY_PROJECT) || 'weurope';
-  const b = localStorage.getItem(STORE_KEY_BOOST);
-  state.boost = b === '1';  // OFF par défaut
-  $('apiKey').value = state.apiKey;
-  $('project').value = state.project;
-  $('boostToggle').classList.toggle('on', state.boost);
+  const ap = $('apiKey'); if (ap) ap.value = state.apiKey;
+  const pj = $('project'); if (pj) pj.value = state.project;
+
+  // S6 : advanced mode toggle (Q7)
+  state.advancedMode = localStorage.getItem(STORE_KEY_ADVANCED) === '1';
 
   try {
     const u = JSON.parse(localStorage.getItem(STORE_KEY_UNLOCKED) || '[]');
@@ -1104,23 +1147,29 @@ function saveSettings() {
   state.project = $('project').value;
   localStorage.setItem(STORE_KEY_API, state.apiKey);
   localStorage.setItem(STORE_KEY_PROJECT, state.project);
-  localStorage.setItem(STORE_KEY_BOOST, state.boost ? '1' : '0');
 }
-function unlock(genus) {
-  if (!genus) return false;
-  if (state.unlocked.has(genus)) return false;
-  state.unlocked.add(genus);
+function setAdvancedMode(on) {
+  state.advancedMode = !!on;
+  try { localStorage.setItem(STORE_KEY_ADVANCED, on ? '1' : '0'); } catch(_){}
+}
+
+// S6 — unlock(groupId) : prend un groupId (slug du nomFrUsuel). Pour Pl@ntNet
+// qui renvoie un genus latin, passer d'abord par lookupGenus() qui mappe via
+// state.flora.genusToGroup.
+function unlock(groupId) {
+  if (!groupId) return false;
+  if (state.unlocked.has(groupId)) return false;
+  state.unlocked.add(groupId);
   localStorage.setItem(STORE_KEY_UNLOCKED, JSON.stringify([...state.unlocked]));
   updateProgressBadge();
-  // S5 : marque pour l'animation flip + glow doré au prochain render du pokédex.
-  state.justUnlockedGenus = genus;
-  // S5 : précharge la fiche Wikipedia en arrière-plan pour avoir la photo prête
-  // quand l'utilisateur va consulter la card (~1s après l'identification typique).
-  const g = state.generaIndex && state.generaIndex.byGenus.get(genus);
-  if (g && !state.wikiMem.has(genus)) {
+  state.justUnlockedGenus = groupId;     // nom historique S5, valeur = groupId en S6
+  // Préchargement Wikipedia en background (utilise l'espèce emblématique)
+  const g = state.generaIndex && state.generaIndex.byGenus.get(groupId);
+  if (g && !state.wikiMem.has(groupId)) {
     const speciesType = getSpeciesTypeLatin(g);
-    getGenusInfo(genus, speciesType).then(info => {
-      state.wikiMem.set(genus, info || { empty: true });
+    const lookupKey = g.generaPrincipal || g.genus;  // genus latin pour wiki
+    getGenusInfo(lookupKey, speciesType).then(info => {
+      state.wikiMem.set(groupId, info || { empty: true });
     });
   }
   return true;
@@ -1132,80 +1181,100 @@ function resetProgress() {
 }
 function updateProgressBadge() {
   const n = state.unlocked.size;
-  const total = state.generaIndex ? state.generaIndex.list.length : TOTAL_GENERA;
-  $('progressBadge').innerHTML = `<strong>${n}</strong> / ${total}`;
-  $('quickPokedexSub').textContent = `${n} / ${total} genres`;
+  const total = state.generaIndex ? state.generaIndex.list.length : TOTAL_GROUPS_FALLBACK;
+  const pb = $('progressBadge');  if (pb) pb.innerHTML = `<strong>${n}</strong> / ${total}`;
+  const qs = $('quickPokedexSub'); if (qs) qs.textContent = `${n} / ${total} fleurs`;
 }
 
 // ============================================================
-// LOAD DATA
+// LOAD DATA (S6 — pivot national, fichier unique floradex-data.json)
 // ============================================================
+//
+// Le format S6 contient :
+//   data.species         : tableau d'espèces filtrées "fleurs sauvages"
+//   data.groups          : tableau de groupes vernaculaires (nomFrUsuel)
+//   data.genusToGroup    : map genus latin → groupId pour matching Pl@ntNet
+//   data.aliases         : map ancien nomLatin → nouveau nomLatin (synonymes TaxRef)
+//   data.totalSpecies / data.totalGroups
+//
+// On expose ces données via state.flora et state.generaIndex avec une
+// sémantique étendue : "byGenus" indexe en réalité par groupId (slug du
+// nomFrUsuel). Les renders existants travaillent transparent sur cette base.
 async function loadData() {
-  $('floraStatus').textContent = 'Chargement des bases…';
+  const statusEl = $('floraStatus');
+  if (statusEl) statusEl.textContent = 'Chargement des bases…';
   try {
     const t0 = performance.now();
-    const [floraResp, generaResp] = await Promise.all([
-      fetch(FLORA_URL, { cache: 'force-cache' }),
-      fetch(GENERA_URL, { cache: 'force-cache' }),
-    ]);
-    if (!floraResp.ok) throw new Error('paca-flora.json HTTP ' + floraResp.status);
-    if (!generaResp.ok) throw new Error('paca-genera.json HTTP ' + generaResp.status);
+    const resp = await fetch(DATA_URL, { cache: 'force-cache' });
+    if (!resp.ok) throw new Error('floradex-data.json HTTP ' + resp.status);
+    const data = await resp.json();
 
-    const flora = await floraResp.json();
-    const genera = await generaResp.json();
-
-    const byLatin = new Map();
-    const byGbifKey = new Map();
-    const byId = new Map();
-    const byGenus = new Map(); // genus -> [species]
-    for (const sp of flora.species) {
+    // ---- Index espèces ----
+    const byLatin   = new Map();
+    const byId      = new Map();
+    const byGenus   = new Map(); // genus latin -> [species] (utile pour render fiches)
+    for (const sp of data.species) {
       const k = normalizeLatin(sp.nomLatin);
       if (k) byLatin.set(k, sp);
-      if (sp.gbifKey) byGbifKey.set(String(sp.gbifKey), sp);
       byId.set(sp.id, sp);
-      const g = genusFromLatin(sp.nomLatin);
+      const g = sp.genus || genusFromLatin(sp.nomLatin);
       if (!byGenus.has(g)) byGenus.set(g, []);
       byGenus.get(g).push(sp);
     }
 
-    // Numérotation Pokédex stable : ordre alphabétique du nom latin
-    // S5 : on filtre AVANT la numérotation pour éviter les trous dans la séquence.
-    const sorted = [...genera.genera]
-      .filter(g => !EXCLUDED_GENERA.has(g.genus))
-      .sort((a, b) => a.genus.localeCompare(b.genus));
-    sorted.forEach((g, i) => { g.pokedexNumber = i + 1; });
-    const byGenusIdx = new Map();
-    for (const g of sorted) byGenusIdx.set(g.genus, g);
-    const excludedCount = genera.genera.length - sorted.length;
+    // ---- Index groupes vernaculaires ----
+    // Numérotation Pokédex : ordre alphabétique du nomFrUsuel (stable).
+    const sorted = [...data.groups].sort((a, b) =>
+      stripAccents(a.nomFrUsuel).toLowerCase().localeCompare(
+        stripAccents(b.nomFrUsuel).toLowerCase()));
+    sorted.forEach((g, i) => {
+      g.pokedexNumber = i + 1;
+      // Shim de compatibilité S5 : les renders attendent g.genus / g.family / g.familleFr
+      // ainsi que calanquesCount / endemicCount qui sont à 0 en S6 (pivot national).
+      g.genus          = g.id;            // groupId comme identifiant principal
+      g.family         = g.familleLat;
+      g.familleFr      = g.famille;
+      g.calanquesCount = 0;               // S6 : plus de scope régional
+      g.endemicCount   = 0;               // S6 : endémique recalculé en S7 (cf Q6)
+      g.statutMin      = g.statutDominant; // proxy pour compat
+    });
+    const byGroupId = new Map();
+    for (const g of sorted) byGroupId.set(g.id, g);
+
+    // Map genus latin → groupId (depuis le fichier de données + safety net)
+    const genusToGroup = new Map(Object.entries(data.genusToGroup || {}));
+    // Carte des aliases TaxRef (synonyme → nom accepté)
+    const aliases = data.aliases || {};
 
     state.flora = {
-      byLatin, byGbifKey, byId, byGenus,
-      aliases: flora.taxonomicAliases || {},
-      total: flora.totalCount,
-      calanques: flora.calanquesCount,
-      version: flora.version,
+      byLatin, byId, byGenus,
+      genusToGroup, aliases,
+      total: data.totalSpecies,
+      version: data.version,
     };
     state.generaIndex = {
-      list: sorted,
-      byGenus: byGenusIdx,
-      total: sorted.length,
-      coverage: genera.frenchNamesCoverage,
-      excludedCount,
+      list:     sorted,
+      byGenus:  byGroupId,     // nom historique S5 (en S6 c'est byGroupId)
+      total:    sorted.length,
+      groupCount: data.totalGroups,
     };
 
     const ms = Math.round(performance.now() - t0);
-    $('floraStatus').textContent = `✅ Bases chargées : ${flora.totalCount} espèces, ${genera.totalGenera} genres (${genera.frenchNamesCoverage.percentCovered}% noms FR) — ${ms} ms`;
+    if (statusEl) statusEl.textContent =
+      `✅ ${data.totalGroups} fleurs, ${data.totalSpecies} espèces (France) — ${ms} ms`;
     updateProgressBadge();
 
-    // S5 : calcule le top 15 des familles botaniques pour le dropdown filtre
+    // S6 — mode avancé : on calcule quand même les familles pour le toggle
     computeFamilyTop15();
-    populateFamilySelect();
 
-    // S5 : hydrate le miroir RAM des données Wikipedia depuis IndexedDB (non bloquant)
+    // Onboarding S6 si premier boot
+    if (shouldShowOnboardingS6() && typeof showOnboardingS6 === 'function') {
+      try { showOnboardingS6(); } catch(e){}
+    }
+
+    // Hydrate le miroir RAM Wikipedia depuis IndexedDB (non bloquant)
     wikiCacheGetAll().then(map => {
       state.wikiMem = map;
-      // Si l'utilisateur est déjà sur une fiche ou le pokédex, on rafraîchit pour
-      // afficher tout ce qu'on avait en cache.
       if (location.hash.startsWith('#/genre/')) {
         const g = decodeURIComponent(location.hash.replace('#/genre/', ''));
         renderDetail(g);
@@ -1214,7 +1283,7 @@ async function loadData() {
       }
     });
   } catch (e) {
-    $('floraStatus').textContent = '⚠ Échec chargement : ' + e.message;
+    if (statusEl) statusEl.textContent = '⚠ Échec chargement : ' + e.message;
     console.error(e);
   }
 }
@@ -1248,24 +1317,26 @@ function populateFamilySelect() {
 
 function lookupSpecies(scientificName, gbifId) {
   if (!state.flora) return null;
-  // Alias d'abord
+  // Alias d'abord (synonyme TaxRef → nom accepté)
   const alias = state.flora.aliases[scientificName];
   const targetName = alias || scientificName;
-  if (gbifId && state.flora.byGbifKey.has(String(gbifId))) {
-    return state.flora.byGbifKey.get(String(gbifId));
-  }
+  // (gbifKey n'est plus indexé en S6 — on s'appuie sur le nom latin uniquement)
   const k = normalizeLatin(targetName);
   if (k && state.flora.byLatin.has(k)) return state.flora.byLatin.get(k);
-  // fallback : matcher juste sur le genre + 1re espèce
   return null;
 }
 
+// S6 — lookup d'un groupe vernaculaire à partir d'un nom scientifique
+// Pl@ntNet. Flux : alias TaxRef → genus latin → state.flora.genusToGroup
+// → state.generaIndex.byGenus (qui indexe par groupId).
 function lookupGenus(scientificName) {
-  if (!state.generaIndex) return null;
-  const alias = state.flora ? state.flora.aliases[scientificName] : null;
+  if (!state.generaIndex || !state.flora) return null;
+  const alias = state.flora.aliases[scientificName];
   const targetName = alias || scientificName;
-  const g = genusFromLatin(targetName);
-  return state.generaIndex.byGenus.get(g) || null;
+  const genusLatin = genusFromLatin(targetName);
+  const groupId = state.flora.genusToGroup.get(genusLatin);
+  if (!groupId) return null;
+  return state.generaIndex.byGenus.get(groupId) || null;
 }
 
 // ============================================================
@@ -1329,22 +1400,19 @@ function refreshGenusList() {
   const list = state.generaIndex.list;
   const f = state.filter;
   const q = state.search;
-  const famF = state.familyFilter;  // S5 : filtre famille (P3)
+  // S6 : filtre 'calanques' supprimé (pivot national). 'endemic' également (cf Q6).
   const filtered = list.filter(g => {
     // Filtres statut
     if (f === 'unlocked' && !state.unlocked.has(g.genus)) return false;
-    if (f === 'calanques' && g.calanquesCount === 0) return false;
-    if (f === 'commune' && g.statutDominant !== 'commune') return false;
-    if (f === 'peu-commune' && g.statutDominant !== 'peu-commune') return false;
-    if (f === 'rare' && g.statutDominant !== 'rare') return false;
-    if (f === 'tres-rare' && g.statutDominant !== 'tres-rare') return false;
+    if (f === 'commune'    && g.statutDominant !== 'commune') return false;
+    if (f === 'peu-commune'&& g.statutDominant !== 'peu-commune') return false;
+    if (f === 'rare'       && g.statutDominant !== 'rare') return false;
+    if (f === 'tres-rare'  && g.statutDominant !== 'tres-rare') return false;
     if (f === 'legendaire' && g.statutDominant !== 'legendaire' && g.statutMin !== 'legendaire') return false;
-    if (f === 'endemic' && g.endemicCount === 0) return false;
-    // S5 : filtre famille (cumulatif avec le statut)
-    if (famF && g.familleFr !== famF && g.family !== famF) return false;
-    // Recherche fuzzy
+    // Recherche fuzzy : on cherche dans nomFrUsuel + famille + genres latins + emblém
     if (q) {
-      const hay = g.nomFrUsuel + ' ' + g.genus + ' ' + (g.familleFr || '') + ' ' + (g.speciesEmblematique?.nomFr || '');
+      const generaText = (g.genera || []).join(' ');
+      const hay = g.nomFrUsuel + ' ' + generaText + ' ' + (g.familleFr || '') + ' ' + (g.speciesEmblematique?.nomFr || '');
       if (!fuzzyMatch(q, hay)) return false;
     }
     return true;
@@ -1438,17 +1506,18 @@ function renderGenusCard(g) {
   ].filter(Boolean).join(' ');
   // Affichage silhouette si non découvert : icône floutée + nom usuel toujours visible
   // (on ne masque pas le nom — l'utilisateur veut savoir ce qu'il chasse)
+  // S6 : on affiche famille + nb d'espèces (plus de Calanques/endémique)
+  const subline = (g.familleFr || g.family || '') + ' · ' + g.speciesCount + ' esp.';
   return `
     <div class="${cls}" data-genus="${escapeHtml(g.genus)}"${styleAttr}>
       <div class="pokedex-num">N°${num}</div>
       <div class="gn-icon">${icon}</div>
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
-      <div class="gn-lat">${escapeHtml(g.genus)} · ${g.speciesCount} esp.</div>
+      <div class="gn-lat">${escapeHtml(subline)}</div>
       <div class="gn-meta">
-        <span class="gn-chip rar-${g.statutDominant}">${escapeHtml(STATUT_SHORT[g.statutDominant])}</span>
-        ${g.calanquesCount ? `<span class="gn-chip cal">🌊</span>` : ''}
-        ${isEnd ? `<span class="gn-chip endemic">⭐</span>` : ''}
+        ${g.statutDominant && g.statutDominant !== 'unknown' ? `<span class="gn-chip rar-${g.statutDominant}">${escapeHtml(STATUT_SHORT[g.statutDominant])}</span>` : ''}
         ${isLeg && g.statutDominant !== 'legendaire' ? `<span class="gn-chip rar-legendaire">👑</span>` : ''}
+        ${g.isMicroEspeceComplex ? `<span class="gn-chip" title="complexe apomictique">⚛︎</span>` : ''}
       </div>
     </div>
   `;
@@ -1559,50 +1628,53 @@ const FAMILY_HABITAT = {
   'Asparagacées': { hab: 'Garrigues, sous-bois clairs', flor: 'Avril – juin' },
 };
 function getHabitatHint(g) {
-  return FAMILY_HABITAT[g.familleFr] || FAMILY_HABITAT[g.family] || { hab: 'Habitats variés en région PACA', flor: 'Variable selon les espèces' };
+  return FAMILY_HABITAT[g.familleFr] || FAMILY_HABITAT[g.family] || { hab: 'Habitats variés en France métropolitaine', flor: 'Variable selon les espèces' };
 }
 
-// Anecdote heuristique selon caractéristiques
+// Anecdote heuristique selon caractéristiques (S6 : pivot national)
 function getAnecdote(g) {
-  if (g.endemicCount > 0) return "Au moins une espèce de ce genre n'existe nulle part ailleurs sur Terre — un trésor PACA.";
-  if (g.statutMin === 'legendaire') return "Ce genre abrite une espèce considérée comme un emblème botanique français. Une rencontre rare et précieuse.";
-  if (g.calanquesCount === g.speciesCount && g.speciesCount > 1) return "Toutes les espèces de ce genre sont présentes dans le massif des Calanques — un genre profondément méditerranéen.";
-  if (g.calanquesCount > 0 && g.speciesCount === 1) return "L'unique espèce de ce genre en PACA fréquente le massif des Calanques.";
-  if (g.speciesCount > 30) return `Avec ${g.speciesCount} espèces différentes en PACA, c'est l'un des genres les plus diversifiés de la région — un défi pour les botanistes.`;
-  if (g.speciesCount === 1) return "Un genre représenté par une seule espèce dans la région — facile à identifier !";
-  if (g.statutDominant === 'commune') return "Un genre commun, facile à observer lors de tes balades.";
+  if (g.isMicroEspeceComplex) return g.microNote || "Ce groupe est un complexe d'espèces apomictiques : des centaines de micro-espèces ont été décrites, mais elles se distinguent à peine à l'œil nu.";
+  if (g.statutMin === 'legendaire') return "Ce groupe abrite une espèce considérée comme un emblème botanique français. Une rencontre rare et précieuse.";
+  if ((g.genera || []).length > 1) return `Ce groupe vernaculaire fusionne ${g.genera.length} genres botaniques (${g.genera.slice(0, 3).join(', ')}${g.genera.length > 3 ? '…' : ''}) sous le même nom usuel.`;
+  if (g.speciesCount > 30) return `Avec ${g.speciesCount} espèces différentes en France, c'est l'un des groupes les plus diversifiés — un défi pour les botanistes.`;
+  if (g.speciesCount === 1) return "Un groupe représenté par une seule espèce en France — facile à identifier !";
+  if (g.statutDominant === 'commune') return "Un groupe commun, facile à observer lors de tes balades.";
   return null;
 }
 
 // ============================================================
 // RENDER : DETAIL
 // ============================================================
-function renderDetail(genus) {
+// S6 — renderDetail(groupId) : prend un slug de groupe vernaculaire.
+function renderDetail(groupId) {
   if (!state.generaIndex) return;
-  const g = state.generaIndex.byGenus.get(genus);
+  const g = state.generaIndex.byGenus.get(groupId);
   if (!g) {
-    $('detailContent').innerHTML = `<div class="empty-state">Genre inconnu : ${escapeHtml(genus)}</div>`;
+    $('detailContent').innerHTML = `<div class="empty-state">Carte inconnue : ${escapeHtml(groupId)}</div>`;
     return;
   }
 
   const isUnlocked = state.unlocked.has(g.genus);
   const isLeg = g.statutDominant === 'legendaire' || g.statutMin === 'legendaire';
-  const isEnd = g.endemicCount > 0;
+  const isEnd = false;       // S6 : notion endémique recalculée en S7 (Q6)
 
-  // Sous-listing espèces (depuis flora.byGenus)
-  const speciesList = state.flora.byGenus.get(g.genus) || [];
-  // Tri : id, statut commune en premier, calanques en premier
-  const order = { 'commune': 0, 'peu-commune': 1, 'rare': 2, 'tres-rare': 3, 'legendaire': 4 };
-  speciesList.sort((a,b) => {
+  // S6 — Sous-listing espèces : on collecte depuis TOUS les genres botaniques du groupe
+  const speciesList = [];
+  for (const genLat of (g.genera || [])) {
+    const list = state.flora.byGenus.get(genLat) || [];
+    for (const sp of list) speciesList.push(sp);
+  }
+  // Tri par rang statut puis nom latin (calanques retiré)
+  const order = { 'commune': 0, 'peu-commune': 1, 'rare': 2, 'tres-rare': 3, 'legendaire': 4, 'unknown': 5 };
+  speciesList.sort((a, b) => {
     const oa = order[a.statut] ?? 99;
     const ob = order[b.statut] ?? 99;
     if (oa !== ob) return oa - ob;
-    if (a.calanques !== b.calanques) return b.calanques - a.calanques;
     return a.nomLatin.localeCompare(b.nomLatin);
   });
 
   // Espèce identifiée à highlighter
-  const idLatin = state.lastIdentified && state.lastIdentified.genus === g.genus
+  const idLatin = state.lastIdentified && state.lastIdentified.groupId === g.id
     ? state.lastIdentified.speciesLatin
     : null;
 
@@ -1657,18 +1729,17 @@ function renderDetail(genus) {
       <div class="hero-num">N°${num} / ${state.generaIndex.list.length}</div>
       ${heroVisual}
       <div class="gn-fr">${escapeHtml(g.nomFrUsuel)}</div>
-      <div class="gn-lat">${escapeHtml(g.genus)} · ${escapeHtml(g.familleFr || g.family || '')}</div>
+      <div class="gn-lat">${state.advancedMode ? escapeHtml((g.genera || []).join(' · ')) + ' · ' + escapeHtml(g.familleFr || g.family || '') : escapeHtml(g.familleFr || g.family || 'Fleurs sauvages')}</div>
       <div class="badges" style="justify-content:center;">
-        <span class="badge statut rar-${g.statutDominant}">${STATUT_LABELS[g.statutDominant]}</span>
-        ${g.calanquesCount ? `<span class="badge calanques">🌊 ${g.calanquesCount} esp. Calanques</span>` : ''}
+        ${g.statutDominant && g.statutDominant !== 'unknown' ? `<span class="badge statut rar-${g.statutDominant}">${STATUT_LABELS[g.statutDominant]}</span>` : ''}
         ${isLeg ? `<span class="badge legendaire">👑 légendaire</span>` : ''}
-        ${isEnd ? `<span class="badge endemic">⭐ endémique</span>` : ''}
         ${isUnlocked ? `<span class="badge paca">✓ Découvert</span>` : ''}
+        ${g.isMicroEspeceComplex ? `<span class="badge endemic" title="${escapeHtml(g.microNote||'')}">⚛︎ complexe apomictique</span>` : ''}
       </div>
       <div class="stats">
-        <div class="stat"><div class="v">${g.speciesCount}</div><div class="l">Espèces PACA</div></div>
-        <div class="stat"><div class="v">${g.calanquesCount}</div><div class="l">Calanques</div></div>
-        <div class="stat"><div class="v">${g.endemicCount || 0}</div><div class="l">Endémiques</div></div>
+        <div class="stat"><div class="v">${g.speciesCount}</div><div class="l">Espèces</div></div>
+        <div class="stat"><div class="v">${(g.genera||[]).length}</div><div class="l">Genres botaniques</div></div>
+        <div class="stat"><div class="v">#${num}</div><div class="l">Pokédex</div></div>
       </div>
     </div>
 
@@ -1699,16 +1770,25 @@ function renderDetail(genus) {
     </div>` : ''}
 
     <div class="detail-section">
-      <h3>🌱 Espèces en PACA <span class="small">(${speciesList.length})</span></h3>
+      <h3>🌱 Espèces dans ce groupe <span class="small">(${speciesList.length})</span></h3>
       <div class="species-list">
         ${speciesList.map(s => renderSpeciesRow(s, idLatin)).join('')}
       </div>
+      ${state.advancedMode ? `
       <div class="legend-bar" style="margin-top:10px;">
-        <span class="item">🌊 Calanques</span>
-        <span class="item">⭐ Endémique</span>
         <span class="item">👑 Légendaire</span>
-      </div>
+        <span class="item">⚛︎ Complexe apomictique</span>
+      </div>` : ''}
     </div>
+
+    ${state.advancedMode && (g.genera||[]).length > 1 ? `
+    <div class="detail-section">
+      <h3>🔬 Mode avancé · genres botaniques regroupés</h3>
+      <div class="info-grid">
+        ${g.genera.map(gen => `<div class="info-cell"><div class="info-label">Genre</div><div class="info-value"><em>${escapeHtml(gen)}</em></div></div>`).join('')}
+      </div>
+      <p class="small" style="margin:8px 0 0;">Ces ${g.genera.length} genres botaniques sont fusionnés sous le nom usuel « ${escapeHtml(g.nomFrUsuel)} » pour simplifier la navigation.</p>
+    </div>` : ''}
 
     <div class="detail-section" style="text-align:center;">
       <button class="btn" id="btnDetailIdentify">📷 Identifier une fleur de ce genre</button>
@@ -1767,8 +1847,6 @@ function renderDetail(genus) {
 function renderSpeciesRow(s, identifiedLatin) {
   const isId = identifiedLatin && normalizeLatin(s.nomLatin) === normalizeLatin(identifiedLatin);
   const flags = [];
-  if (s.calanques) flags.push('🌊');
-  if (s.endemic) flags.push('⭐');
   if (s.statut === 'legendaire') flags.push('👑');
   const fr = s.nomFr && s.nomFr !== '/' ? s.nomFr.split(',')[0] : '';
   return `
@@ -1783,25 +1861,25 @@ function renderSpeciesRow(s, identifiedLatin) {
 }
 
 function getGenusDescription(g) {
-  // Description placeholder S3 : phrase synthétique générée à partir des stats
+  // S6 — description du groupe vernaculaire (plus de PACA / Calanques)
   const isLeg = g.statutDominant === 'legendaire' || g.statutMin === 'legendaire';
-  const isEnd = g.endemicCount > 0;
+  const nbGenera = (g.genera || []).length;
   let parts = [];
-  parts.push(`Le genre <em>${escapeHtml(g.genus)}</em> regroupe ${g.speciesCount} espèce${g.speciesCount > 1 ? 's' : ''} en région PACA`);
+  const generaStr = nbGenera > 1
+    ? `Le groupe <em>${escapeHtml(g.nomFrUsuel)}</em> rassemble ${nbGenera} genres botaniques (${g.genera.slice(0, 3).map(x => '<em>' + escapeHtml(x) + '</em>').join(', ')}${nbGenera > 3 ? '…' : ''}) et ${g.speciesCount} espèce${g.speciesCount > 1 ? 's' : ''} en France métropolitaine`
+    : `Le groupe <em>${escapeHtml(g.nomFrUsuel)}</em> (genre <em>${escapeHtml((g.genera||[])[0] || g.generaPrincipal || '')}</em>) regroupe ${g.speciesCount} espèce${g.speciesCount > 1 ? 's' : ''} en France métropolitaine`;
+  parts.push(generaStr);
   if (g.familleFr) parts[parts.length - 1] += `, dans la famille des <strong>${escapeHtml(g.familleFr)}</strong>`;
   parts[parts.length - 1] += '.';
-  if (g.calanquesCount > 0) {
-    parts.push(`On en rencontre ${g.calanquesCount === 1 ? 'une' : g.calanquesCount} dans le massif des <strong>Calanques</strong>.`);
-  }
-  if (isEnd) {
-    parts.push(`Au moins une espèce est <strong>endémique</strong> de la région.`);
+  if (g.isMicroEspeceComplex) {
+    parts.push(`Attention : c'est un <strong>complexe apomictique</strong> — beaucoup de micro-espèces ont été décrites mais elles se distinguent à peine à l'œil nu.`);
   }
   if (isLeg) {
-    parts.push(`Ce genre abrite une espèce de statut <strong>légendaire</strong> — un emblème botanique de la flore française.`);
+    parts.push(`Ce groupe abrite une espèce de statut <strong>légendaire</strong> — un emblème botanique de la flore française.`);
   }
   if (g.speciesEmblematique && g.speciesEmblematique.nomFr) {
     const efr = g.speciesEmblematique.nomFr.split(',')[0];
-    parts.push(`Espèce-type : <em>${escapeHtml(g.speciesEmblematique.nomLatin)}</em> (${escapeHtml(efr)}).`);
+    parts.push(`Espèce-type : <em>${escapeHtml(g.speciesEmblematique.nomLatin)}</em>${efr ? ' (' + escapeHtml(efr) + ')' : ''}.`);
   }
   return parts.join(' ');
 }
@@ -2021,6 +2099,8 @@ function handleApiError(status, json) {
   }
 }
 
+// S6 — renderResults : gate strict ≥ 0.61 sur top 1 (décision Q9), pas de
+// boost régional, plus de notion PACA / Calanques (pivot national).
 function renderResults(json) {
   const list = $('results');
   list.innerHTML = '';
@@ -2031,89 +2111,94 @@ function renderResults(json) {
   }
 
   const items = results.map(r => {
-    const sci = r?.species?.scientificNameWithoutAuthor || r?.species?.scientificName || '';
+    const sci  = r?.species?.scientificNameWithoutAuthor || r?.species?.scientificName || '';
     const auth = r?.species?.scientificNameAuthorship || '';
-    const fr = (r?.species?.commonNames && r.species.commonNames[0]) || '';
-    const fam = r?.species?.family?.scientificNameWithoutAuthor || r?.species?.family?.scientificName || '';
-    const gbifId = r?.gbif?.id || null;
-    const matchPaca = lookupSpecies(sci, gbifId);
-    const matchGenus = lookupGenus(sci);
-    const baseScore = r.score || 0;
-    const boostedScore = (state.boost && matchPaca) ? Math.min(1, baseScore * PACA_BOOST) : baseScore;
-    return { sci, auth, fr, fam, gbifId, matchPaca, matchGenus, baseScore, boostedScore, raw: r };
+    const fr   = (r?.species?.commonNames && r.species.commonNames[0]) || '';
+    const fam  = r?.species?.family?.scientificNameWithoutAuthor || r?.species?.family?.scientificName || '';
+    const matchSpecies = lookupSpecies(sci, null);
+    const matchGroup   = lookupGenus(sci);          // groupe vernaculaire
+    const score = r.score || 0;
+    return { sci, auth, fr, fam, matchSpecies, matchGroup, score, raw: r };
   });
 
-  if (state.boost) items.sort((a, b) => b.boostedScore - a.boostedScore);
-
-  let pacaCount = 0, calanquesCount = 0;
-  items.forEach(it => { if (it.matchPaca) pacaCount++; if (it.matchPaca && it.matchPaca.calanques) calanquesCount++; });
-
-  const summary = pacaCount === 0
-    ? `⚠️ Aucun des candidats n'est dans la base PACA — espèce hors-région ?`
-    : `✅ ${pacaCount}/${items.length} candidat(s) en PACA${calanquesCount ? ' · 🌊 ' + calanquesCount + ' Calanques' : ''}`;
-  showStatus(summary, pacaCount > 0 ? 'ok' : 'warn');
-
-  // Top 1 : déclenche l'unlock + persiste l'historique
+  // Pl@ntNet renvoie déjà ses items triés par score décroissant, on respecte
+  // strictement cet ordre (décision Q9 : pas de "best ≥ 61% en sous-position").
   const top = items[0];
-  if (top && top.matchGenus) {
-    const wasNew = unlock(top.matchGenus.genus);
-    state.lastIdentified = { genus: top.matchGenus.genus, speciesLatin: top.sci };
+  const topScore = top?.score || 0;
+  const topMeetsThreshold = topScore >= MIN_CONFIDENCE_TO_UNLOCK;
+  const topGroup = top?.matchGroup;
+
+  if (topMeetsThreshold && topGroup) {
+    const wasNew = unlock(topGroup.id);
+    state.lastIdentified = { groupId: topGroup.id, speciesLatin: top.sci };
     saveToHistory({
       ts: Date.now(),
-      genus: top.matchGenus.genus,
-      nomFrUsuel: top.matchGenus.nomFrUsuel,
+      groupId: topGroup.id,
+      genus: topGroup.id,    // alias historique S5 conservé pour l'IDB existante
+      nomFrUsuel: topGroup.nomFrUsuel,
       speciesLatin: top.sci,
       speciesFr: top.fr,
-      score: top.boostedScore,
+      score: topScore,
       thumbDataUrl: state.photos[0]?.thumbDataUrl || null,
-      isPaca: !!top.matchPaca,
     });
     refreshHistoryCount();
     if (wasNew) {
-      showStatus(`🎉 Nouveau genre débloqué : ${top.matchGenus.nomFrUsuel}`, 'ok');
+      showStatus(`🎉 Nouvelle carte débloquée : ${topGroup.nomFrUsuel}`, 'ok');
+    } else {
+      showStatus(`✅ Identifié : ${topGroup.nomFrUsuel} (déjà dans ton Pokédex)`, 'ok');
     }
+  } else if (top && !topMeetsThreshold) {
+    showStatus(
+      `🔎 Identification peu fiable (${Math.round(topScore * 100)}% < 61%). Recadre plus net pour valider cette carte.`,
+      'warn'
+    );
+  } else if (top && !topGroup) {
+    showStatus(`🌍 Espèce hors du Pokédex Fleurs (sans doute un arbre, une fougère ou exotique).`, 'warn');
   }
 
   items.forEach((it, idx) => {
     const card = document.createElement('div');
-    card.className = 'result' + (idx === 0 ? ' top' : '');
+    const meetsThreshold = it.score >= MIN_CONFIDENCE_TO_UNLOCK;
+    card.className = 'result'
+      + (idx === 0 ? ' top' : '')
+      + (meetsThreshold ? ' score-ok' : ' score-low');
 
     const head = document.createElement('div'); head.className = 'result-head';
     const left = document.createElement('div'); left.style.flex = '1';
-    const genusFr = it.matchGenus ? `<div class="result-fr">${escapeHtml(it.matchGenus.nomFrUsuel)}</div>` : '';
+    const groupFr = it.matchGroup ? `<div class="result-fr">${escapeHtml(it.matchGroup.nomFrUsuel)}</div>` : '';
     left.innerHTML = `
       <div class="result-name"><em>${escapeHtml(it.sci)}</em>${it.auth ? ' <span class="small">' + escapeHtml(it.auth) + '</span>' : ''}</div>
-      ${genusFr}
-      ${it.fr && (!it.matchGenus || it.fr.toLowerCase() !== it.matchGenus.nomFrUsuel.toLowerCase()) ? `<div class="small">${escapeHtml(it.fr)}</div>` : ''}
+      ${groupFr}
+      ${it.fr && (!it.matchGroup || it.fr.toLowerCase() !== it.matchGroup.nomFrUsuel.toLowerCase()) ? `<div class="small">${escapeHtml(it.fr)}</div>` : ''}
       ${it.fam ? `<div class="result-fam">Famille : ${escapeHtml(it.fam)}</div>` : ''}
     `;
     const bubble = document.createElement('div');
-    const boosted = state.boost && it.matchPaca;
-    bubble.className = 'score-bubble' + (boosted ? ' boosted' : '');
-    bubble.innerHTML = `<div class="v">${Math.round(it.boostedScore * 100)}%</div><div class="l">score</div>`;
+    bubble.className = 'score-bubble' + (meetsThreshold ? '' : ' low');
+    bubble.innerHTML = `<div class="v">${Math.round(it.score * 100)}%</div><div class="l">${meetsThreshold ? 'score' : 'trop bas'}</div>`;
     head.appendChild(left); head.appendChild(bubble); card.appendChild(head);
 
     const badges = document.createElement('div'); badges.className = 'badges';
-    if (it.matchPaca) {
-      badges.insertAdjacentHTML('beforeend', `<span class="badge paca">✅ présente en PACA</span>`);
-      if (it.matchPaca.calanques) badges.insertAdjacentHTML('beforeend', `<span class="badge calanques">🌊 Calanques</span>`);
-      badges.insertAdjacentHTML('beforeend', `<span class="badge statut">${STATUT_LABELS[it.matchPaca.statut] || it.matchPaca.statut}</span>`);
-      if (it.matchPaca.endemic) badges.insertAdjacentHTML('beforeend', `<span class="badge endemic">⭐ endémique</span>`);
+    if (it.matchGroup) {
+      badges.insertAdjacentHTML('beforeend', `<span class="badge fleur">🌼 dans le Pokédex Fleurs</span>`);
+      if (it.matchGroup.statutDominant && it.matchGroup.statutDominant !== 'unknown') {
+        badges.insertAdjacentHTML('beforeend',
+          `<span class="badge statut">${escapeHtml(STATUT_LABELS[it.matchGroup.statutDominant] || it.matchGroup.statutDominant)}</span>`);
+      }
     } else {
-      badges.insertAdjacentHTML('beforeend', `<span class="badge hors">⚠️ hors-PACA</span>`);
+      badges.insertAdjacentHTML('beforeend', `<span class="badge hors">⚠️ hors-Pokédex Fleurs</span>`);
     }
     card.appendChild(badges);
 
-    if (it.matchGenus) {
+    if (it.matchGroup) {
       const ob = document.createElement('button');
       ob.className = 'open-genus-btn';
-      ob.textContent = `📖 Ouvrir la fiche : ${it.matchGenus.nomFrUsuel} →`;
-      ob.addEventListener('click', () => setRoute('#/genre/' + encodeURIComponent(it.matchGenus.genus)));
+      ob.textContent = `📖 Ouvrir la fiche : ${it.matchGroup.nomFrUsuel} →`;
+      ob.addEventListener('click', () => setRoute('#/genre/' + encodeURIComponent(it.matchGroup.id)));
       card.appendChild(ob);
     }
 
     const meta = document.createElement('div'); meta.className = 'meta-line';
-    meta.innerHTML = `<span>Pl@ntNet : ${(it.baseScore * 100).toFixed(1)}%${boosted ? ' → boosté ' + (it.boostedScore * 100).toFixed(1) + '%' : ''}</span><span>${it.matchPaca ? 'id: ' + it.matchPaca.id : (it.gbifId ? 'GBIF: ' + it.gbifId : '')}</span>`;
+    meta.innerHTML = `<span>Pl@ntNet : ${(it.score * 100).toFixed(1)}%</span><span>${it.matchSpecies ? 'id: ' + it.matchSpecies.id : ''}</span>`;
     card.appendChild(meta);
 
     list.appendChild(card);
@@ -2478,14 +2563,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // S5 : dropdown famille (P3)
-  const famSel = $('familySelect');
-  if (famSel) {
-    famSel.addEventListener('change', () => {
-      state.familyFilter = famSel.value;
-      refreshGenusList();
-    });
-  }
+  // S6 : dropdown famille retiré (Q7), basculé en mode avancé sur fiche.
 
   // Detail back
   $('btnBack').addEventListener('click', () => {
@@ -2515,11 +2593,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Settings
   $('apiKey').addEventListener('input', saveSettings);
   $('project').addEventListener('change', saveSettings);
-  $('boostToggle').addEventListener('click', () => {
-    state.boost = !state.boost;
-    $('boostToggle').classList.toggle('on', state.boost);
-    saveSettings();
-  });
+  // S6 : toggle mode avancé (remplace le boost PACA supprimé)
+  const advToggle = $('advancedToggle');
+  if (advToggle) {
+    advToggle.classList.toggle('on', state.advancedMode);
+    advToggle.addEventListener('click', () => {
+      setAdvancedMode(!state.advancedMode);
+      advToggle.classList.toggle('on', state.advancedMode);
+      // Rafraîchir la fiche détaillée si on est dessus
+      if (location.hash.startsWith('#/genre/')) {
+        const id = decodeURIComponent(location.hash.replace('#/genre/', ''));
+        renderDetail(id);
+      }
+    });
+  }
   $('btnCloseSettings').addEventListener('click', closeSettings);
   $('settingsModal').addEventListener('click', (e) => {
     if (e.target === $('settingsModal')) { saveSettings(); closeSettings(); }

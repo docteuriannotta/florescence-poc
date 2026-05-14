@@ -1,31 +1,46 @@
 # Floradex — Pokédex floral (PWA)
 
-Application Pokédex floral. Identifie une fleur avec ton appareil photo (Pl@ntNet) → débloque la fiche du **genre** dans le Pokédex (938 fiches, 3970 espèces, base PACA).
+Application Pokédex floral kid-friendly. Identifie une fleur avec ton appareil photo (Pl@ntNet) → débloque la carte dans le Pokédex.
 
-> Session 5 — fiches enrichies Wikipedia (photo + description), animation de déblocage, filtre famille botanique (mai 2026).
+> **Session 6 (14 mai 2026)** — Pivot national + paradigme vernaculaire. Le Pokédex couvre désormais **toute la France métropolitaine** (TaxRef MNHN) et regroupe les fleurs par **nom usuel** (« Lavandes », « Roses & Églantiers », « Bleuets »…) plutôt que par genre botanique. Refonte visuelle direction « Carnet naturaliste » (palette kraft + encre brune + vert d'eau + tipo serif). Seuil Pl@ntNet ≥ 61% pour débloquer une carte.
 
 > Renommage Florescence → **Floradex** acté en S4. Le dépôt GitHub conserve son ancien nom (`florescence-poc`) pour ne pas casser l'URL des PWA déjà installées.
 
+## Chiffres-clés S6
+
+- **1 729 cartes** (groupes vernaculaires "Fleurs sauvages")
+- **8 670 espèces** (TaxRef v4.17 filtré, France métropolitaine)
+- **41 fusions** de doublons FR appliquées (Arabettes = 5 genres → 1 carte, Silènes = 3 genres → 1 carte, etc.)
+- **1 967 alias** genus → groupId pour matching Pl@ntNet
+
 ## Contenu du dossier
 
-- `index.html` — application single-file (4 vues : Accueil, Pokédex, Détail genre, Identifier ; drawer Réglages ; historique IndexedDB)
-- `paca-flora.json` — 3970 espèces PACA (898 KB, patché S3 : +5 espèces, +1 nom FR, 10 alias taxonomiques)
-- `paca-genera.json` — 938 fiches de genre dérivées (460 KB, 100% noms FR)
+- `index.html` — application single-file (Accueil, Pokédex, Détail carte, Identifier ; drawer Réglages ; historique IndexedDB ; onboarding S6)
+- `floradex-data.json` — **2.5 MB** : 8 670 espèces + 1 729 groupes + map genus→groupId + aliases (remplace paca-flora.json + paca-genera.json)
+- `paca-flora.json` / `paca-genera.json` — conservés pour rétrocompatibilité offline (non utilisés par l'app S6, peuvent être supprimés en S7)
 - `manifest.webmanifest` — PWA installable
-- `service-worker.js` — Service Worker v2 : stale-while-revalidate, auto-cleanup des anciens caches
-- `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` — icônes PWA
+- `service-worker.js` — **Service Worker v3** : stale-while-revalidate, auto-cleanup des anciens caches (S5 inclus)
+- `icon-192.png`, `icon-512.png`, `icon-512-maskable.png` — icônes PWA (à régénérer en palette B en S7)
 - `.nojekyll` — désactive Jekyll côté GitHub Pages
 
-## Mise à jour (S3) — déploiement sur le repo existant
+## Déploiement S6
 
 ```bash
 cd github-deploy
-git add -A
-git commit -m "Session 3 — Pokédex par genre v2 (938 fiches)"
-git push origin main
+chmod +x deploy.sh
+./deploy.sh
 ```
 
-Le Service Worker v2 (`CACHE_VERSION='florescence-v2-genus-2026-05-10-a'`) **invalide automatiquement** l'ancien cache `florescence-poc-v1` du POC S2 sur les téléphones déjà installés. La nouvelle version est prise en compte au prochain rechargement (skipWaiting + clients.claim).
+Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
+
+## Notes techniques S6
+
+- **Données** : pipeline Python build/04→07 (`04_taxref_import.py`, `05_group_vernaculaire.py`, `06_filter_fleurs.py`, `07_build_app_data.py`). Source TaxRef v4.17 MNHN via DwC-Archive GBIF.
+- **localStorage** : nouvelle clé `florescence.unlocked.groups` (groupId). L'ancienne `florescence.unlocked.genera` (S5) est archivée puis vidée au premier boot v6.
+- **IndexedDB** : nom de la base inchangé (`florescence` v2), historique préservé.
+- **Seuil unlock** : `MIN_CONFIDENCE_TO_UNLOCK = 0.61` strict sur top 1 Pl@ntNet. Top 2/3 ≥ 61% n'unlock PAS (décision Q9). Boost +20% PACA supprimé.
+- **Mode avancé** : toggle dans Settings, dévoile famille botanique + liste des genres latins sur chaque fiche détaillée (décision Q7).
+- **À reporter en S7** : géolocalisation photo + endémicité régionale (Q6), table d'alias taxonomique enrichie depuis synonymes TaxRef (cas Centaurea cyanus → Cyanus segetum), affinage palette B (icônes installées, atténuation des box-shadows), filtre fréquence pour réduire des 1 729 cartes vers ~500 fleurs grand-public.
 
 ## Premier lancement sur le téléphone
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Floradex — script de déploiement (Session 5)
+# Floradex — script de déploiement (Session 6 — pivot national + vernaculaire)
 # Lance ceci depuis le dossier github-deploy/ pour pousser sur main.
 set -euo pipefail
 
@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="Patch S5 — Fix photos Wikipedia (URLs cassées + filtre gravures), exclusion 6 genres non-fleurs, logo fond blanc"
+DEFAULT_MSG="Session 6 — Pivot national TaxRef + fusion vernaculaire (1729 cartes, 8670 espèces) + seuil Pl@ntNet 61% + refonte visuelle carnet naturaliste"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 
@@ -34,4 +34,6 @@ echo "   URL prod : https://docteuriannotta.github.io/florescence-poc/"
 echo "   Compte ~1 minute pour que GitHub Pages reflète le commit."
 echo ""
 echo "▶ Vérif post-deploy : recharge l'app sur ton téléphone."
-echo "   Le SW va invalider l'ancien cache 'floradex-v2-…-d' tout seul."
+echo "   Le SW v3 va invalider l'ancien cache 'floradex-v2-genus-…' tout seul."
+echo "   Au premier lancement S6, une bannière 'Floradex passe au national'"
+echo "   t'informera que ta progression a été remise à zéro (décision Q5)."

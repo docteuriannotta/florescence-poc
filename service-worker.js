@@ -1,20 +1,19 @@
-/* Floradex — Service Worker v2 (Session 5 — Fiches Wikipedia enrichies)
+/* Floradex — Service Worker v3 (Session 6 — Pivot national + vernaculaire)
    Stratégie :
    - cache-first + revalidation silencieuse (stale-while-revalidate) sur le shell
-   - paca-genera.json + paca-flora.json précachés
+   - floradex-data.json (S6) précaché en remplacement de paca-flora/genera
    - network-only sur my-api.plantnet.org (toujours réseau, jamais en cache)
    - cross-origin Wikipedia / Wikidata / Wikimedia : laissé passer au réseau
      (le cache applicatif est géré côté JS via IndexedDB, TTL 30 jours)
    - Au update : skipWaiting + clients.claim pour propagation immédiate
-   - Au activate : cleanup automatique de TOUS les anciens caches
+   - Au activate : cleanup automatique de TOUS les anciens caches (y compris S5)
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v2-genus-2026-05-11-g';
+const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14';
 const PRECACHE_URLS = [
   './',
   './index.html',
-  './paca-flora.json',
-  './paca-genera.json',
+  './floradex-data.json',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
