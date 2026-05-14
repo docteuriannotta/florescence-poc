@@ -9,7 +9,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches (y compris S5)
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-i';   // grid x5 + retrait emojis + flou détail locked
+const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-k';   // S8 : grid responsive + flou menu + statuts GBIF + curate multi-noms + 8 badges sprites
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -19,6 +19,15 @@ const PRECACHE_URLS = [
   './icon-512.png',
   './icon-512-maskable.png',
   './floradex-logo.png',
+  // S8 P-badges : 8 sprites médailles
+  './badges/badge-1.png',
+  './badges/badge-2.png',
+  './badges/badge-3.png',
+  './badges/badge-4.png',
+  './badges/badge-5.png',
+  './badges/badge-6.png',
+  './badges/badge-7.png',
+  './badges/badge-8.png',
 ];
 
 self.addEventListener('install', (event) => {

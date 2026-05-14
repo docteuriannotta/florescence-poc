@@ -31,7 +31,7 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-h'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
+Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-j'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
 
 ## Notes techniques S6
 
@@ -44,6 +44,12 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-h'`) **inval
 - **Patch Codex S7a** : icônes PWA + logo in-app régénérés en palette carnet naturaliste.
 - **Patch Codex S7b** : alias taxonomiques Pl@ntNet (`build/10_build_aliases.py`) + capture GPS facultative stockée dans l'historique.
 - **Patch Codex S7c** : 169 titres publics kid-friendly (`displayName`) pour limiter les noms latinifiés dans les titres principaux sans modifier la taxonomie.
+- **Session S8 (Cowork)** :
+  - **P0 grid responsive** : grille 5 cartes/ligne désormais adaptée smartphone via `clamp()` + `min-width: 0` + `--main-pad-x` variable, plus de débordement horizontal sur iPhone SE / petits Android. `overflow-x: hidden` sur `body` en garde-fou.
+  - **P1a flou menu** : photos de cards `locked` désormais réellement floutées (`blur(4px)` + saturate 0.35) via un pseudo-element `::before`, le texte reste net au-dessus. Cohérent avec le flou de la fiche détail.
+  - **P4 statuts de rareté** : 812 groupes scorés via GBIF (`build/12_fetch_gbif_rarete.py`, country=FR, par `generaPrincipal`). Distribution finale : 41 légendaires / 81 très-rares / 203 rares / 242 peu-communes / 245 communes. Métadonnées dans `data.rareteMeta`.
+  - **P-curate multi-noms** : 29 displayName ajoutés pour les groupes multi-espèces aux noms latinifiés (`build/13_curate_multispecies_names.py`). Total 198 displayName.
+  - **P-badges (forme v1)** : 8 médailles paliers de fleurs identifiées (10/25/50/100/200/350/550/812). CSS + logique JS posées, esthétique fine à finaliser en session ultérieure.
 
 ## Premier lancement sur le téléphone
 

@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="Codex S7c — Titres kid-friendly + alias Pl@ntNet + GPS historique"
+DEFAULT_MSG="S8 — Grid responsive + flou menu + statuts GBIF + curate noms + 8 badges sprites"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 

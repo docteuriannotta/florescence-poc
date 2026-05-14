@@ -46,6 +46,8 @@
     --leg: #b8902c;           /* doré sépia */
     --radius: 8px;            /* coins plus doux que S5 */
     --radius-lg: 12px;
+    /* S8 P0 : padding horizontal main adaptatif (10px sur très petit mobile → 16px sur tablette) */
+    --main-pad-x: clamp(10px, 3.5vw, 16px);
     --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --font-serif: "Iowan Old Style", "Palatino", "Palatino Linotype", "Georgia", "Times New Roman", serif;
   }
@@ -59,6 +61,9 @@
     line-height: 1.4;
     min-height: 100vh;
     overscroll-behavior-y: contain;
+    /* S8 P0 patch : garde-fou anti-débordement horizontal sur la grille x5 mobile */
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
   }
   a { color: var(--accent); text-decoration: none; }
   a:active { opacity: 0.7; }
@@ -111,7 +116,8 @@
   header .icon-btn:active { background: var(--bg-card); }
 
   main {
-    padding: 16px;
+    /* S8 P0 : padding horizontal fluide via var, vertical fixe */
+    padding: 16px var(--main-pad-x);
     padding-bottom: calc(40px + env(safe-area-inset-bottom));
     max-width: 720px; margin: 0 auto;
   }
@@ -173,6 +179,100 @@
   .home-quick a .label { font-weight: 600; font-size: 14px; }
   .home-quick a .sub { font-size: 12px; color: var(--fg-dim); margin-top: 2px; }
 
+  /* ============ S8 P-badges v2 : sprites + silhouette vide locked ============ */
+  /* 8 médailles débloquées par paliers de fleurs identifiées.
+     - Unlocked : sprite PNG plein (badge-N.png), forme libre, aucun cadre.
+     - Locked   : cadre pointillé arrondi vide (silhouette mystère respectée). */
+  .badges-block {
+    margin-top: 28px;
+    background: var(--bg-card);
+    border: 1px solid rgba(74,124,94,0.18);
+    border-radius: var(--radius-lg);
+    padding: 16px 14px 14px;
+    box-shadow: 0 2px 10px var(--shadow-soft);
+  }
+  .badges-block .badges-title {
+    font-family: var(--font-serif);
+    font-size: 15px; font-weight: 600;
+    color: var(--fg-dim);
+    text-align: center;
+    margin: 0 0 14px;
+    letter-spacing: 0.4px;
+  }
+  .badges-block .badges-title .count {
+    color: var(--accent); font-weight: 700;
+  }
+  .badges-row {
+    display: grid;
+    /* 4 colonnes par défaut → 2 lignes de 4 sur mobile, plus lisible que 8 */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(8px, 2.5vw, 14px) clamp(6px, 2vw, 10px);
+    padding-bottom: 6px;
+  }
+  /* À partir de 520px on revient à 8 colonnes (tablette/desktop) */
+  @media (min-width: 520px) {
+    .badges-row { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  }
+  .badge-coin {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s ease, filter 0.3s;
+    cursor: help;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .badge-coin:active { transform: scale(0.94); }
+  /* Locked : cadre pointillé vide, AUCUN sprite visible */
+  .badge-coin.locked {
+    border-radius: 14px;
+    border: 1.5px dashed rgba(61,43,31,0.32);
+    background: repeating-linear-gradient(
+      135deg,
+      rgba(61,43,31,0.025) 0 6px,
+      transparent 6px 12px
+    );
+    box-shadow: inset 0 -2px 4px var(--shadow-inset);
+  }
+  .badge-coin.locked::after {
+    content: '?';
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(14px, 4vw, 20px);
+    color: rgba(61,43,31,0.20);
+  }
+  /* Unlocked : sprite PNG plein, sans cadre. Forme libre du badge respectée. */
+  .badge-coin.unlocked {
+    background-image: var(--badge-sprite);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    filter: drop-shadow(0 2px 4px var(--shadow-med));
+  }
+  .badge-coin.unlocked::after { content: none; }
+  .badge-coin.legendary.unlocked {
+    animation: badge-shine 2.4s ease-in-out infinite;
+  }
+  @keyframes badge-shine {
+    0%, 100% { filter: drop-shadow(0 2px 4px var(--shadow-med)) drop-shadow(0 0 4px rgba(244,192,74,0.5)); }
+    50%      { filter: drop-shadow(0 2px 4px var(--shadow-med)) drop-shadow(0 0 14px rgba(244,192,74,0.95)); }
+  }
+  .badge-coin .badge-num {
+    position: absolute;
+    bottom: -16px;
+    left: 50%; transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--fg-faint);
+    white-space: nowrap;
+  }
+  .badge-coin.unlocked .badge-num { color: var(--fg-dim); font-weight: 700; }
+  .badges-hint {
+    text-align: center; font-size: 11px; color: var(--fg-faint);
+    margin-top: 14px;
+  }
+
   /* ============ POKEDEX LIST ============ */
   .pokedex-controls {
     display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;
@@ -182,8 +282,9 @@
     z-index: 5;
     padding: 8px 0 10px;
     border-bottom: 1px solid #243d2c;
-    margin: -8px -16px 14px;
-    padding-left: 16px; padding-right: 16px;
+    /* S8 P0 : margin négatif aligné sur --main-pad-x pour étendre les contrôles bord-à-bord */
+    margin: -8px calc(-1 * var(--main-pad-x)) 14px;
+    padding-left: var(--main-pad-x); padding-right: var(--main-pad-x);
   }
   .search-input {
     width: 100%; padding: 12px 14px;
@@ -218,15 +319,37 @@
   .genus-grid {
     display: grid;
     /* S6 patch : 5 cartes par ligne pour esprit Pokédex (décision user) */
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    /* S8 P0 : gap fluide adapté à la largeur écran (4px mobile → 6px tablette) */
+    gap: clamp(3px, 1.2vw, 6px);
   }
   /* Cards plus denses pour tenir à 5 par ligne sur mobile */
-  .genus-card { padding: 6px 5px 5px !important; min-height: 130px !important; }
-  .genus-card .pokedex-num { font-size: 9px !important; top: 4px !important; right: 5px !important; }
-  .genus-card .gn-fr { font-size: 11px !important; line-height: 1.15 !important; }
-  .genus-card .gn-lat { font-size: 9px !important; }
-  .genus-card .gn-chip { font-size: 8px !important; padding: 1px 4px !important; }
+  .genus-card {
+    /* S8 P0 : min-width: 0 indispensable pour empêcher tout débordement horizontal en grid */
+    min-width: 0 !important;
+    padding: clamp(4px, 1.2vw, 8px) clamp(3px, 1.0vw, 6px) clamp(3px, 0.9vw, 5px) !important;
+    min-height: clamp(120px, 30vw, 165px) !important;
+  }
+  .genus-card .pokedex-num { font-size: clamp(8px, 2.2vw, 10px) !important; top: 4px !important; right: 5px !important; }
+  .genus-card .gn-fr {
+    font-size: clamp(9.5px, 2.8vw, 13px) !important;
+    line-height: 1.15 !important;
+    /* S8 P0 : casse les mots longs (latins) plutôt que déborder */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .genus-card .gn-lat { font-size: clamp(8px, 2.2vw, 10px) !important; overflow-wrap: anywhere; }
+  .genus-card .gn-chip {
+    font-size: clamp(7px, 1.9vw, 9px) !important;
+    padding: 1px clamp(2px, 0.8vw, 5px) !important;
+    /* S8 P0 : pas de wrap sur chip mais ellipsis si trop long */
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* S8 P0 : meta wrap proprement, pas de débordement */
+  .genus-card .gn-meta { min-width: 0; }
   /* S6 patch : photo seule, plus d'emoji famille sur les cards */
   .genus-card .gn-icon { display: none !important; }
   /* Card style POKÉDEX */
@@ -742,10 +865,27 @@
 
   /* Photo de fond sur cards Pokédex (genres découverts qui ont une photo en cache) */
   /* S6 : photo floutée+désaturée pour les locked, sharp+couleurs pour unlocked */
+  /* S8 P1a : vraie image floutée (blur 4px) via ::before, le texte reste net au-dessus */
   .genus-card.locked.has-photo {
-    background-image: linear-gradient(180deg, rgba(61,43,31,0.25) 0%, rgba(61,43,31,0.65) 55%, rgba(61,43,31,0.92) 100%), var(--card-photo);
-    background-size: cover; background-position: center;
-    filter: saturate(0.4) brightness(0.85);
+    background-image: none;
+    filter: none;
+    isolation: isolate;     /* enferme le z-index négatif du ::before dans la card */
+    overflow: hidden;
+    background-color: var(--bg-card);
+  }
+  .genus-card.locked.has-photo::before {
+    content: '';
+    position: absolute;
+    inset: -6px;            /* déborde légèrement pour cacher les bords du blur */
+    background-image:
+      linear-gradient(180deg, rgba(61,43,31,0.32) 0%, rgba(61,43,31,0.68) 55%, rgba(61,43,31,0.94) 100%),
+      var(--card-photo);
+    background-size: cover;
+    background-position: center;
+    filter: blur(4px) saturate(0.35) brightness(0.82);
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
   }
   .genus-card.locked.has-photo .gn-icon { filter: blur(2px) brightness(0.7); }
   .genus-card.has-photo {
@@ -834,13 +974,22 @@
       <a data-route="#/pokedex" id="quickPokedex">
         <span class="ico">📖</span>
         <div class="label">Pokédex</div>
-        <div class="sub" id="quickPokedexSub">— / 938 genres</div>
+        <div class="sub" id="quickPokedexSub">— / 812 fleurs</div>
       </a>
       <a data-route="#/historique">
         <span class="ico">⏱</span>
         <div class="label">Historique</div>
         <div class="sub" id="quickHistorySub">— identifications</div>
       </a>
+    </div>
+
+    <!-- S8 P-badges : 8 médailles paliers de fleurs identifiées (forme v1) -->
+    <div class="badges-block" id="badgesBlock">
+      <div class="badges-title">
+        Mes médailles <span class="count" id="badgesCount">0/8</span>
+      </div>
+      <div class="badges-row" id="badgesRow"></div>
+      <div class="badges-hint" id="badgesHint">Identifie des fleurs pour débloquer tes médailles.</div>
     </div>
   </section>
 
@@ -1232,6 +1381,63 @@ function updateProgressBadge() {
   const total = state.generaIndex ? state.generaIndex.list.length : TOTAL_GROUPS_FALLBACK;
   const pb = $('progressBadge');  if (pb) pb.innerHTML = `<strong>${n}</strong> / ${total}`;
   const qs = $('quickPokedexSub'); if (qs) qs.textContent = `${n} / ${total} fleurs`;
+  renderBadges(n);
+}
+
+// ============================================================
+// S8 P-badges — 8 médailles paliers de fleurs identifiées (FORME v1)
+// ============================================================
+// L'esthétique fine est réservée à une session ultérieure (icônes custom,
+// animations dédiées, sons). Ici on pose le squelette : seuils, rendu, état.
+const BADGES = [
+  { id: 'tempete',    label: 'Souffle des fleurs',    threshold: 10,  sprite: 'badges/badge-1.png' },
+  { id: 'reverie',    label: 'Œil de rêverie',        threshold: 25,  sprite: 'badges/badge-2.png' },
+  { id: 'sentier',    label: 'Pierre du sentier',     threshold: 50,  sprite: 'badges/badge-3.png' },
+  { id: 'etoile',     label: 'Étoile crépusculaire',  threshold: 100, sprite: 'badges/badge-4.png' },
+  { id: 'rose',       label: 'Rose éternelle',        threshold: 200, sprite: 'badges/badge-5.png' },
+  { id: 'vague',      label: 'Aile de marée',         threshold: 350, sprite: 'badges/badge-6.png' },
+  { id: 'aurore',     label: 'Aurore florale',        threshold: 550, sprite: 'badges/badge-7.png' },
+  { id: 'legendaire', label: 'Lune des herbiers',     threshold: 812, sprite: 'badges/badge-8.png', legendary: true },
+];
+
+function renderBadges(unlockedCount) {
+  const row = $('badgesRow');
+  if (!row) return;
+  // Adapter dynamiquement le dernier seuil au total dataset
+  const total = state.generaIndex ? state.generaIndex.list.length : null;
+  const list = BADGES.map((b, i) => {
+    if (i === BADGES.length - 1 && total) {
+      return { ...b, threshold: total };
+    }
+    return b;
+  });
+  const unlockedBadges = list.filter(b => unlockedCount >= b.threshold).length;
+  row.innerHTML = list.map(b => {
+    const unlocked = unlockedCount >= b.threshold;
+    const cls = [
+      'badge-coin',
+      unlocked ? 'unlocked' : 'locked',
+      b.legendary ? 'legendary' : ''
+    ].filter(Boolean).join(' ');
+    // Sprite injecté UNIQUEMENT si débloqué (locked = aucun spoil visuel)
+    const style = unlocked && b.sprite ? `--badge-sprite:url('${b.sprite}')` : '';
+    const title = unlocked
+      ? `${b.label} — débloquée (${b.threshold} fleurs)`
+      : `Médaille mystère — ${b.threshold - unlockedCount} fleurs restantes (${unlockedCount}/${b.threshold})`;
+    return `
+      <div class="${cls}" style="${style}" title="${title}" aria-label="${title}" data-badge="${b.id}">
+        <span class="badge-num">${b.threshold}</span>
+      </div>`;
+  }).join('');
+  const count = $('badgesCount');
+  if (count) count.textContent = `${unlockedBadges}/${list.length}`;
+  const hint = $('badgesHint');
+  if (hint) {
+    const next = list.find(b => unlockedCount < b.threshold);
+    hint.textContent = next
+      ? `Prochaine médaille : ${next.label} — ${next.threshold - unlockedCount} fleurs à découvrir.`
+      : 'Tu as toutes les médailles. Magnifique exploration.';
+  }
 }
 
 // ============================================================
