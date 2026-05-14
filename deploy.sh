@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="S8 — Grid responsive + flou menu + statuts GBIF + curate noms + 8 badges sprites"
+DEFAULT_MSG="S8.1 — Fix perf Pokédex + vue dédiée Médailles + onglet nav-bar (5 onglets)"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 
