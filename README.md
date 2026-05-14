@@ -8,15 +8,15 @@ Application Pokédex floral kid-friendly. Identifie une fleur avec ton appareil 
 
 ## Chiffres-clés S6
 
-- **1 729 cartes** (groupes vernaculaires "Fleurs sauvages")
-- **8 670 espèces** (TaxRef v4.17 filtré, France métropolitaine)
+- **812 cartes** (groupes vernaculaires "Fleurs sauvages")
+- **6 029 espèces** (TaxRef v4.17 filtré, France métropolitaine)
 - **41 fusions** de doublons FR appliquées (Arabettes = 5 genres → 1 carte, Silènes = 3 genres → 1 carte, etc.)
-- **1 967 alias** genus → groupId pour matching Pl@ntNet
+- **1 791 alias** genus → groupId + alias taxonomiques S7 pour matching Pl@ntNet
 
 ## Contenu du dossier
 
 - `index.html` — application single-file (Accueil, Pokédex, Détail carte, Identifier ; drawer Réglages ; historique IndexedDB ; onboarding S6)
-- `floradex-data.json` — **2.5 MB** : 8 670 espèces + 1 729 groupes + map genus→groupId + aliases (remplace paca-flora.json + paca-genera.json)
+- `floradex-data.json` — **1.8 MB** : 6 029 espèces + 812 groupes + map genus→groupId + aliases (remplace paca-flora.json + paca-genera.json)
 - `paca-flora.json` / `paca-genera.json` — conservés pour rétrocompatibilité offline (non utilisés par l'app S6, peuvent être supprimés en S7)
 - `manifest.webmanifest` — PWA installable
 - `service-worker.js` — **Service Worker v3** : stale-while-revalidate, auto-cleanup des anciens caches (S5 inclus)
@@ -31,7 +31,7 @@ chmod +x deploy.sh
 ./deploy.sh
 ```
 
-Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-f'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
+Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-h'`) **invalide automatiquement** l'ancien cache S5 (`floradex-v2-genus-...`). Au premier lancement S6 chez un utilisateur S5 existant, une bannière d'**onboarding** explique le pivot national + le **reset de la progression** (décision Q5).
 
 ## Notes techniques S6
 
@@ -40,8 +40,10 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-f'`) **inval
 - **IndexedDB** : nom de la base inchangé (`florescence` v2), historique préservé.
 - **Seuil unlock** : `MIN_CONFIDENCE_TO_UNLOCK = 0.61` strict sur top 1 Pl@ntNet. Top 2/3 ≥ 61% n'unlock PAS (décision Q9). Boost +20% PACA supprimé.
 - **Mode avancé** : toggle dans Settings, dévoile famille botanique + liste des genres latins sur chaque fiche détaillée (décision Q7).
-- **À reporter en S7** : géolocalisation photo + endémicité régionale (Q6), table d'alias taxonomique enrichie depuis synonymes TaxRef (cas Centaurea cyanus → Cyanus segetum), atténuation des box-shadows, filtre fréquence pour réduire des 1 729 cartes vers ~500 fleurs grand-public.
+- **À reporter en S7** : endémicité régionale complète (polygones régions + présence INPN), rareté/fréquence, filtre fréquence pour réduire les 812 cartes vers ~300-500 fleurs grand-public.
 - **Patch Codex S7a** : icônes PWA + logo in-app régénérés en palette carnet naturaliste.
+- **Patch Codex S7b** : alias taxonomiques Pl@ntNet (`build/10_build_aliases.py`) + capture GPS facultative stockée dans l'historique.
+- **Patch Codex S7c** : 169 titres publics kid-friendly (`displayName`) pour limiter les noms latinifiés dans les titres principaux sans modifier la taxonomie.
 
 ## Premier lancement sur le téléphone
 
@@ -54,19 +56,20 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-f'`) **inval
 
 ### 🏠 Accueil
 - Un seul gros bouton **Identifier**. Suppression du toggle organes (S3 décision produit).
-- Compteur Pokédex : `X / 938 genres`.
+- Compteur Pokédex : `X / 812 cartes`.
 - Accès rapide Pokédex et Historique.
 
 ### 📖 Pokédex
-- 938 cartes de genres avec nom FR limpide ("Coquelicots & Pavots", "Cistes", "Roses & Églantiers"…).
+- 812 cartes vernaculaires avec nom FR limpide ("Coquelicots & Pavots", "Cistes", "Roses & Églantiers"…).
 - Recherche fuzzy FR + latin (`coquelicot`, `papaver`, `papavéracée` matchent).
-- Filtres : Tous / Découverts / 🌊 Calanques / 🟢 🔵 🟠 🔴 par rareté / 👑 Légendaires / ⭐ Endémiques.
+- Filtres : Tous / Découverts / 🟢 🔵 🟠 🔴 par rareté / 👑 Légendaires.
 - Carte Pokédex débloquée (`unlocked`) au top 1 d'une identification réussie.
 
 ### 📷 Identifier
 - Capture jusqu'à 5 photos, compression client (1200px, JPEG q=0.85).
+- Localisation GPS facultative à la première photo / identification, stockée uniquement dans l'historique local.
 - POST multipart vers `my-api.plantnet.org/v2/identify/{project}`, `organs=auto`.
-- Top 3 affiché avec score Pl@ntNet, badge PACA, statut, Calanques.
+- Top 3 affiché avec score Pl@ntNet et statut.
 - **Bouton "Ouvrir la fiche : <Nom FR du genre> →"** sur chaque résultat → fiche genre + sous-listing espèces avec l'espèce identifiée surlignée.
 - Boost +20% PACA dispo dans réglages, **off par défaut** (S3) pour comparer la précision brute.
 
