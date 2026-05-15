@@ -9,7 +9,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches (y compris S5)
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-p';   // S8.4 : retrait overflow-x hidden body + will-change GPU layers (fix scroll bloqué iOS)
+const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-14-q';   // S8.5 : 75 anecdotes curées + rename Prunes→Ixoras + préservation pipeline
 const PRECACHE_URLS = [
   './',
   './index.html',

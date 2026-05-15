@@ -1589,6 +1589,7 @@ async function loadData() {
       genusToGroup, aliases,
       aliasesNormalized,
       inatPhotos,
+      anecdotes: data.anecdotes || {},   // S8.5 — anecdotes curées "Le saviez-vous"
       total: data.totalSpecies,
       version: data.version,
     };
@@ -1983,12 +1984,26 @@ function getHabitatHint(g) {
 
 // Anecdote heuristique selon caractéristiques (S6 : pivot national)
 function getAnecdote(g) {
+  // S8.5 : Priorité 1 — anecdotes curées (data.anecdotes), vraies infos
+  // (usage médicinal, symbolique, histoire culturelle, étymologie).
+  const curated = state.flora && state.flora.anecdotes && state.flora.anecdotes[g.id];
+  if (curated) return curated;
+
+  // Priorité 2 — extraits Wikipedia FR si récupérés et contiennent un mot-clé
+  // significatif (utilisation, médicinal, symbolique…). On évite les phrases
+  // vides type "le genre Lavandula est un genre de plantes".
+  const wikiInfo = state.wikiMem && state.wikiMem.get(g.genus);
+  if (wikiInfo && wikiInfo.extract) {
+    const txt = wikiInfo.extract;
+    const sentences = txt.split(/(?<=[.!?])\s+/);
+    const KEYWORDS = /utilis|médecin|m[ée]dicinal|tradition|symbol|sacr|culinair|comestible|aliment|aromat|toxi|poison|infusion|tisane|parfum|huile|guéris|cosmét|religi/i;
+    const goodSentence = sentences.find(s => KEYWORDS.test(s) && s.length > 40 && s.length < 320);
+    if (goodSentence) return goodSentence.trim();
+  }
+
+  // Priorité 3 — fallback générique (cas particuliers utiles)
   if (g.isMicroEspeceComplex) return g.microNote || "Ce groupe est un complexe d'espèces apomictiques : des centaines de micro-espèces ont été décrites, mais elles se distinguent à peine à l'œil nu.";
   if (g.statutMin === 'legendaire') return "Ce groupe abrite une espèce considérée comme un emblème botanique français. Une rencontre rare et précieuse.";
-  if ((g.genera || []).length > 1) return `Ce groupe vernaculaire fusionne ${g.genera.length} genres botaniques (${g.genera.slice(0, 3).join(', ')}${g.genera.length > 3 ? '…' : ''}) sous le même nom usuel.`;
-  if (g.speciesCount > 30) return `Avec ${g.speciesCount} espèces différentes en France, c'est l'un des groupes les plus diversifiés — un défi pour les botanistes.`;
-  if (g.speciesCount === 1) return "Un groupe représenté par une seule espèce en France — facile à identifier !";
-  if (g.statutDominant === 'commune') return "Un groupe commun, facile à observer lors de tes balades.";
   return null;
 }
 
