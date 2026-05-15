@@ -54,8 +54,8 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-j'`) **inval
 - **Session S9 (Codex)** :
   - **Nettoyage arbres/fruitiers** : retrait de 23 groupes hors-scope (arbres, fruitiers, cultures utilitaires, groupes hybrides/poubelles) + filtrage de 7 groupes mixtes. Total final : 787 groupes / 5 808 espèces.
   - **Doublons d'id fusionnés** : `gnaphales` et `senecons` consolidés pour éviter deux cartes partageant le même identifiant.
-  - **Anecdotes étendues** : 168 anecdotes curées utiles (21% des fiches), sans fallback générique dans la section.
-  - **Service Worker** : cache `floradex-v3-fleurs-2026-05-15-a`.
+  - **Anecdotes étendues** : 787 / 787 fiches ont désormais une anecdote "Le saviez-vous" spécifique. Base : 168 textes curés manuellement + 619 compléments S9.1 par règles groupe/genre/espèce/famille. Aucun doublon exact.
+  - **Service Worker** : cache `floradex-v3-fleurs-2026-05-15-b`.
 
 ## Premier lancement sur le téléphone
 

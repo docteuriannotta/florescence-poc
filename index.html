@@ -1589,7 +1589,7 @@ async function loadData() {
       genusToGroup, aliases,
       aliasesNormalized,
       inatPhotos,
-      anecdotes: data.anecdotes || {},   // S8.5 — anecdotes curées "Le saviez-vous"
+      anecdotes: data.anecdotes || {},   // S9.1 — anecdotes "Le saviez-vous" sur 100% des fiches
       total: data.totalSpecies,
       version: data.version,
     };
@@ -1984,8 +1984,8 @@ function getHabitatHint(g) {
 
 // Anecdote heuristique selon caractéristiques (S6 : pivot national)
 function getAnecdote(g) {
-  // S8.5 : Priorité 1 — anecdotes curées (data.anecdotes), vraies infos
-  // (usage médicinal, symbolique, histoire culturelle, étymologie).
+  // S9.1 : Priorité 1 — anecdotes data.anecdotes (100% des fiches),
+  // vraies infos utiles : usage, symbolique, écologie, morphologie, prudence.
   const curated = state.flora && state.flora.anecdotes && state.flora.anecdotes[g.id];
   if (curated) return curated;
 

@@ -19,7 +19,7 @@ echo "▶ Stage de tous les fichiers…"
 git add -A
 
 echo ""
-DEFAULT_MSG="S9.0 — nettoyage arbres fruitiers + 168 anecdotes Le saviez-vous"
+DEFAULT_MSG="S9.1 — anecdotes Le saviez-vous sur 100% des fiches"
 read -p "Message de commit [$DEFAULT_MSG] : " MSG
 MSG="${MSG:-$DEFAULT_MSG}"
 
