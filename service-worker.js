@@ -9,7 +9,7 @@
    - Au activate : cleanup automatique de TOUS les anciens caches (y compris S5)
    Bump CACHE_VERSION à chaque deploy pour invalider proprement.
 */
-const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-15-b';   // S9.1 : anecdotes 100% des fiches
+const CACHE_VERSION = 'floradex-v3-fleurs-2026-05-15-d';   // S9.3 : modal détail des badges
 const PRECACHE_URLS = [
   './',
   './index.html',
