@@ -354,7 +354,7 @@
     /* S6 patch : 5 cartes par ligne pour esprit Pokédex (décision user) */
     grid-template-columns: repeat(5, minmax(0, 1fr));
     /* S8.3 : valeurs FIXES (plus de vw) — vw provoque un recalc layout à chaque
-       scroll iOS Safari (URL bar qui change la viewport height) × 812 cards = lag mortel */
+       scroll iOS Safari (URL bar qui change la viewport height) × grande grille = lag mortel */
     gap: 4px;
   }
   /* Cards plus denses pour tenir à 5 par ligne sur mobile */
@@ -918,7 +918,7 @@
 
   /* Photo de fond sur cards Pokédex (genres découverts qui ont une photo en cache) */
   /* S8.3 : blur restauré, mais c'est la pagination JS (~120 cards rendues max)
-     qui rend ça supportable. Le coût GPU est désormais sur ~120 cards, pas 812. */
+     qui rend ça supportable. Le coût GPU reste borné aux cards visibles, pas à toute la grille. */
   .genus-card.locked.has-photo {
     background-image: none;
     isolation: isolate;
@@ -938,7 +938,7 @@
     z-index: -1;
     border-radius: inherit;
     pointer-events: none;
-    /* PAS de will-change : créerait 812 layers GPU → saturation mémoire iOS */
+    /* PAS de will-change : créerait un layer GPU par card → saturation mémoire iOS */
   }
   .genus-card.locked.has-photo .gn-icon { filter: blur(2px) brightness(0.7); }
   .genus-card.has-photo {
@@ -1027,7 +1027,7 @@
       <a data-route="#/pokedex" id="quickPokedex">
         <span class="ico">📖</span>
         <div class="label">Pokédex</div>
-        <div class="sub" id="quickPokedexSub">— / 812 fleurs</div>
+        <div class="sub" id="quickPokedexSub">— / 787 fleurs</div>
       </a>
       <a data-route="#/badges" id="quickBadges">
         <span class="ico">🏅</span>
@@ -1460,7 +1460,7 @@ const BADGES = [
   { id: 'rose',       label: 'Rose éternelle',        threshold: 200, sprite: 'badges/badge-5.png' },
   { id: 'vague',      label: 'Aile de marée',         threshold: 350, sprite: 'badges/badge-6.png' },
   { id: 'aurore',     label: 'Aurore florale',        threshold: 550, sprite: 'badges/badge-7.png' },
-  { id: 'legendaire', label: 'Lune des herbiers',     threshold: 812, sprite: 'badges/badge-8.png', legendary: true },
+  { id: 'legendaire', label: 'Lune des herbiers',     threshold: 787, sprite: 'badges/badge-8.png', legendary: true },
 ];
 
 function renderBadges(unlockedCount) {

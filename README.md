@@ -8,15 +8,15 @@ Application Pokédex floral kid-friendly. Identifie une fleur avec ton appareil 
 
 ## Chiffres-clés S6
 
-- **812 cartes** (groupes vernaculaires "Fleurs sauvages")
-- **6 029 espèces** (TaxRef v4.17 filtré, France métropolitaine)
+- **787 cartes** (groupes vernaculaires "Fleurs sauvages", après nettoyage S9 arbres/fruitiers)
+- **5 808 espèces** (TaxRef v4.17 filtré, France métropolitaine)
 - **41 fusions** de doublons FR appliquées (Arabettes = 5 genres → 1 carte, Silènes = 3 genres → 1 carte, etc.)
 - **1 791 alias** genus → groupId + alias taxonomiques S7 pour matching Pl@ntNet
 
 ## Contenu du dossier
 
 - `index.html` — application single-file (Accueil, Pokédex, Détail carte, Identifier ; drawer Réglages ; historique IndexedDB ; onboarding S6)
-- `floradex-data.json` — **1.8 MB** : 6 029 espèces + 812 groupes + map genus→groupId + aliases (remplace paca-flora.json + paca-genera.json)
+- `floradex-data.json` — **1.8 MB** : 5 808 espèces + 787 groupes + map genus→groupId + aliases (remplace paca-flora.json + paca-genera.json)
 - `paca-flora.json` / `paca-genera.json` — conservés pour rétrocompatibilité offline (non utilisés par l'app S6, peuvent être supprimés en S7)
 - `manifest.webmanifest` — PWA installable
 - `service-worker.js` — **Service Worker v3** : stale-while-revalidate, auto-cleanup des anciens caches (S5 inclus)
@@ -40,16 +40,22 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-j'`) **inval
 - **IndexedDB** : nom de la base inchangé (`florescence` v2), historique préservé.
 - **Seuil unlock** : `MIN_CONFIDENCE_TO_UNLOCK = 0.61` strict sur top 1 Pl@ntNet. Top 2/3 ≥ 61% n'unlock PAS (décision Q9). Boost +20% PACA supprimé.
 - **Mode avancé** : toggle dans Settings, dévoile famille botanique + liste des genres latins sur chaque fiche détaillée (décision Q7).
-- **À reporter en S7** : endémicité régionale complète (polygones régions + présence INPN), rareté/fréquence, filtre fréquence pour réduire les 812 cartes vers ~300-500 fleurs grand-public.
+- **À reporter** : endémicité régionale complète (polygones régions + présence INPN), badge "Endémique de [Région]" et affinage esthétique des badges.
 - **Patch Codex S7a** : icônes PWA + logo in-app régénérés en palette carnet naturaliste.
 - **Patch Codex S7b** : alias taxonomiques Pl@ntNet (`build/10_build_aliases.py`) + capture GPS facultative stockée dans l'historique.
 - **Patch Codex S7c** : 169 titres publics kid-friendly (`displayName`) pour limiter les noms latinifiés dans les titres principaux sans modifier la taxonomie.
 - **Session S8 (Cowork)** :
-  - **P0 grid responsive** : grille 5 cartes/ligne désormais adaptée smartphone via `clamp()` + `min-width: 0` + `--main-pad-x` variable, plus de débordement horizontal sur iPhone SE / petits Android. `overflow-x: hidden` sur `body` en garde-fou.
+  - **P0 grid responsive** : grille 5 cartes/ligne adaptée smartphone avec valeurs fixes + media queries, `minmax(0, 1fr)` et `--main-pad-x`. Les `clamp(*vw*)` sur les cards et `overflow-x: hidden` sur `body` ont été retirés après diagnostic iOS.
   - **P1a flou menu** : photos de cards `locked` désormais réellement floutées (`blur(4px)` + saturate 0.35) via un pseudo-element `::before`, le texte reste net au-dessus. Cohérent avec le flou de la fiche détail.
-  - **P4 statuts de rareté** : 812 groupes scorés via GBIF (`build/12_fetch_gbif_rarete.py`, country=FR, par `generaPrincipal`). Distribution finale : 41 légendaires / 81 très-rares / 203 rares / 242 peu-communes / 245 communes. Métadonnées dans `data.rareteMeta`.
+  - **P4 statuts de rareté** : 812 groupes scorés via GBIF (`build/12_fetch_gbif_rarete.py`, country=FR, par `generaPrincipal`). Après nettoyage S9 : 35 légendaires / 74 très-rares / 199 rares / 239 peu-communes / 242 communes. Métadonnées dans `data.rareteMeta`.
   - **P-curate multi-noms** : 29 displayName ajoutés pour les groupes multi-espèces aux noms latinifiés (`build/13_curate_multispecies_names.py`). Total 198 displayName.
-  - **P-badges (forme v1)** : 8 médailles paliers de fleurs identifiées (10/25/50/100/200/350/550/812). CSS + logique JS posées, esthétique fine à finaliser en session ultérieure.
+  - **P-badges (forme v1)** : 8 médailles paliers de fleurs identifiées (10/25/50/100/200/350/550/total Pokédex). CSS + logique JS posées, esthétique fine à finaliser en session ultérieure.
+  - **S8.5 anecdotes** : 75 anecdotes substantielles "Le saviez-vous" ajoutées, avec priorité aux usages, histoires, symboliques et étymologies.
+- **Session S9 (Codex)** :
+  - **Nettoyage arbres/fruitiers** : retrait de 23 groupes hors-scope (arbres, fruitiers, cultures utilitaires, groupes hybrides/poubelles) + filtrage de 7 groupes mixtes. Total final : 787 groupes / 5 808 espèces.
+  - **Doublons d'id fusionnés** : `gnaphales` et `senecons` consolidés pour éviter deux cartes partageant le même identifiant.
+  - **Anecdotes étendues** : 168 anecdotes curées utiles (21% des fiches), sans fallback générique dans la section.
+  - **Service Worker** : cache `floradex-v3-fleurs-2026-05-15-a`.
 
 ## Premier lancement sur le téléphone
 
@@ -62,11 +68,11 @@ Le Service Worker v3 (`CACHE_VERSION='floradex-v3-fleurs-2026-05-14-j'`) **inval
 
 ### 🏠 Accueil
 - Un seul gros bouton **Identifier**. Suppression du toggle organes (S3 décision produit).
-- Compteur Pokédex : `X / 812 cartes`.
+- Compteur Pokédex : `X / 787 cartes`.
 - Accès rapide Pokédex et Historique.
 
 ### 📖 Pokédex
-- 812 cartes vernaculaires avec nom FR limpide ("Coquelicots & Pavots", "Cistes", "Roses & Églantiers"…).
+- 787 cartes vernaculaires avec nom FR limpide ("Coquelicots & Pavots", "Cistes", "Roses & Églantiers"…).
 - Recherche fuzzy FR + latin (`coquelicot`, `papaver`, `papavéracée` matchent).
 - Filtres : Tous / Découverts / 🟢 🔵 🟠 🔴 par rareté / 👑 Légendaires.
 - Carte Pokédex débloquée (`unlocked`) au top 1 d'une identification réussie.
